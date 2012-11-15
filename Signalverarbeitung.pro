@@ -12,10 +12,23 @@ TARGET = Signalverarbeitung
 CONFIG   += console
 CONFIG   -= app_bundle
 
+QMAKE_CXXFLAGS += -std=c++0x
+
 TEMPLATE = app
 
-INCLUDEPATH += ./vxi11
+SOURCES += main.cpp \
+    signalprocdispatcher.cpp \
+    networkdriver.cpp \
+    signalprocworker.cpp \
+    abstractcalc.cpp \
+    xcorrcalc.cpp \
+    oscidriver.cpp
 
-SOURCES += main.cpp
-
-HEADERS +=
+HEADERS += \
+    signalprocdispatcher.h \
+    basicdefinitions.h \
+    networkdriver.h \
+    signalprocworker.h \
+    abstractcalc.h \
+    xcorrcalc.h \
+    oscidriver.h
