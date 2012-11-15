@@ -2,7 +2,7 @@
 
 #include "signalprocdispatcher.h"
 
-SignalProcWorker::SignalProcWorker(QObject *parent) : QObject(parent)
+SignalProcWorker::SignalProcWorker()
 {
 }
 
@@ -13,7 +13,8 @@ void SignalProcWorker::run()
 
 procdata SignalProcWorker::calc(bufferchunk * sampleData, int32_t dataSize)
 {
-
+    procdata data;
+    emit finished(data);
 }
 
 int32_t SignalProcWorker::calcDirUsingXCorr()

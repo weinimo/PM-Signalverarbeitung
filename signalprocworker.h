@@ -2,7 +2,6 @@
 #define SIGNALPROCWORKER_H
 
 #include <QObject>
-#include <QThread>
 
 #include "basicdefinitions.h"
 
@@ -10,17 +9,16 @@ class SignalProcWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit SignalProcWorker(QObject *parent = 0);
-    void run();
+    explicit        SignalProcWorker();
+    void            run();
 
 private:
-    procdata calc(bufferchunk * sampleData, int32_t dataSize);
-    int32_t calcDirUsingXCorr();
+    int32_t         calcDirUsingXCorr();
 
 signals:
-
+    void            finished(procdata data);
 public slots:
-
+    procdata        calc(bufferchunk * sampleData, int32_t dataSize);
 };
 
 #endif // SIGNALPROCWORKER_H

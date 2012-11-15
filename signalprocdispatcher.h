@@ -1,13 +1,12 @@
 #ifndef SIGNALPROCDISPATCHER_H
 #define SIGNALPROCDISPATCHER_H
 
-#include <QObject>
-#include <QSemaphore>
-#include <QMutex>
-#include <QTimer>
+#include <QtCore>
 
 #include "basicdefinitions.h"
 #include "signalprocworker.h"
+#include "networkdriver.h"
+#include "oscidriver.h"
 
 class SignalProcDispatcher : public QObject
 {
@@ -29,12 +28,18 @@ private:
     QSemaphore              freeBuffer;
     QSemaphore              usedBuffer;
     QTimer                  osciPoller;
+    QThread                 thread[SPROC_NBUFFERCHUNKS];
+
+    SignalProcWorker        worker[SPROC_NBUFFERCHUNKS];
+    OsciDriver              osciDriver;
+    NetworkDriver           netDriver;
 
     void                    sendToGui(procdata data);
     void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);
     void                    getDataFromOsci();
     
 signals:
+    void                    bufferReadyForSampledata(bufferchunk * chunk);
     
 public slots:
 
