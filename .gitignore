@@ -1,0 +1,7 @@
+*.bak
+*.sln
+*.vcxproj
+
+# Binaries
+*.o
+
