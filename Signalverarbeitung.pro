@@ -14,5 +14,6 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+INCLUDEPATH += ./rsscope
 
 SOURCES += main.cpp
