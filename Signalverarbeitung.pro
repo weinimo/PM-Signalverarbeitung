@@ -14,6 +14,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += ./rsscope
+INCLUDEPATH += ./vxi11
 
 SOURCES += main.cpp
+
+HEADERS +=
