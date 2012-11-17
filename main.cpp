@@ -1,9 +1,56 @@
-#include <QCoreApplication>
+#include <QtCore>
+#include <iostream>
+
 #include "vxi11/vxi11_user.h"
+#include "signalprocdispatcher.h"
+
+void cmdHelp(char * progname)
+{
+    using namespace std;
+    cout << endl;
+    cout << "Signal processing program for direction finding." << endl;
+    cout << endl;
+    cout << "Usage: " << progname << " <clientID> [OPTIONS]" << endl;
+    cout << endl;
+    cout << "Possible options:" << endl;
+    cout << "\t--demo\t\t Run program in demo mode. No oscilloscope required here." << endl;
+    cout << endl;
+    cout << "(c) 2012 Thomas Weininger" << endl;
+    exit(1);
+}
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    // Command line parsing
+    QRegExp clientIDRegEx("^[0-9]{1,3}$");                              // Matches everything from 0 to 999.
+    QRegExp demoModeRegEx
+    bool demoMode = false;
+    int clientID = -1;
+
+    QStringList cmdline_args = a.arguments();
+
+    // command line argument parsing
+    for (int i = 1; i <= cmdline_args.size(); i++) {
+        if ( demoModeRegEx.indexIn(cmdline_args.at(i) != -1 )           // Do we use demo mode?
+            demoMode = true;
+        else if ( clientIDRegEx.indexIn(cmdline_args.at(i) != -1 ) {   // Try to get the client ID.
+            clientID = cmdline_args.at(i).toInt();
+        }
+        else {
+            std::cerr << "Error: Unknown argument: " args.at(i) << std::endl;
+            cmdHelp(argv[0]);
+        }
+    }
+
+    if (clientID < 0 || clientID > 255) {                               // Make sure clientID fits in the uint8_t clientID field.
+         std::cerr << "Error: Client ID must be 255 or less." << std::endl;
+         cmdHelp(argv[0]);
+    }
+
+
+    SignalProcDispatcher sProc(0, clientID, demoMode);                  // Now let's start...
 
     return a.exec();
 }

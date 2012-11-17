@@ -1,6 +1,16 @@
 *.bak
 *.sln
 *.vcxproj
+*.pro.user
+*.bzr
+
+# VXI11 files
+.bzrignore
+vxi11.h
+vxi11_cmd
+vxi11_clnt.c
+vxi11_svc.c
+vxi11_xdr.c
 
 # Binaries
 *.o

@@ -1,7 +1,7 @@
 #include "signalprocdispatcher.h"
 
 
-SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID) :
+SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool demoMode) :
     QObject(parent), clientID(clientID), pktCounter(0), osciPoller(this),
     nWorkerThreads(SPROC_NBUFFERCHUNKS), usedBuffer(SPROC_NBUFFERCHUNKS),
     osciDriver(true)
