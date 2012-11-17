@@ -23,9 +23,13 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    QTextStream cin(stdin, QIODevice::ReadOnly);
+    QTextStream cout(stdout, QIODevice::WriteOnly);
+    QTextStream cerr(stderr, QIODevice::WriteOnly);
+
     // Command line parsing
     QRegExp clientIDRegEx("^[0-9]{1,3}$");                              // Matches everything from 0 to 999.
-    QRegExp demoModeRegEx
+    QRegExp demoModeRegEx("--demo");
     bool demoMode = false;
     int clientID = -1;
 
@@ -33,19 +37,18 @@ int main(int argc, char *argv[])
 
     // command line argument parsing
     for (int i = 1; i <= cmdline_args.size(); i++) {
-        if ( demoModeRegEx.indexIn(cmdline_args.at(i) != -1 )           // Do we use demo mode?
+        if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 )           // Do we use demo mode?
             demoMode = true;
-        else if ( clientIDRegEx.indexIn(cmdline_args.at(i) != -1 ) {   // Try to get the client ID.
+        else if ( clientIDRegEx.indexIn(cmdline_args.at(i)) != -1 )     // Try to get the client ID.
             clientID = cmdline_args.at(i).toInt();
-        }
         else {
-            std::cerr << "Error: Unknown argument: " args.at(i) << std::endl;
+	    cerr << "Error: Unknown argument: " << cmdline_args.at(i);
             cmdHelp(argv[0]);
         }
     }
 
     if (clientID < 0 || clientID > 255) {                               // Make sure clientID fits in the uint8_t clientID field.
-         std::cerr << "Error: Client ID must be 255 or less." << std::endl;
+	 cerr << "Error: Client ID must be 255 or less.";
          cmdHelp(argv[0]);
     }
 
