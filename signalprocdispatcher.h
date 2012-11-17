@@ -19,20 +19,20 @@ public:
 
 private:
     int const               clientID;
-    uint32_t                pktCounter;
     int const               nWorkerThreads;
+    uint32_t                pktCounter;
     bufferchunk             sampleBuffer[SPROC_NBUFFERCHUNKS];
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
-    QMutex                  m;
+    NetworkDriver           netDriver;
+    OsciDriver              osciDriver;
+    SignalProcWorker        worker[SPROC_NBUFFERCHUNKS];
+
     QSemaphore              freeBuffer;
-    QSemaphore              usedBuffer;
+    QMutex                  m;
     QTimer                  osciPoller;
     QThread                 thread[SPROC_NBUFFERCHUNKS];
-
-    SignalProcWorker        worker[SPROC_NBUFFERCHUNKS];
-    OsciDriver              osciDriver;
-    NetworkDriver           netDriver;
+    QSemaphore              usedBuffer;
 
     void                    sendToGui(procdata data);
     void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);

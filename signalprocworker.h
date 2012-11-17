@@ -18,7 +18,7 @@ private:
 signals:
     void            finished(procdata data);
 public slots:
-    procdata        calc(bufferchunk * sampleData, int32_t dataSize);
+    void            calc(bufferchunk * sampleData, int32_t dataSize);
 };
 
 #endif // SIGNALPROCWORKER_H

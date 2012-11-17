@@ -2,9 +2,8 @@
 
 
 SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool demoMode) :
-    QObject(parent), clientID(clientID), pktCounter(0), osciPoller(this),
-    nWorkerThreads(SPROC_NBUFFERCHUNKS), usedBuffer(SPROC_NBUFFERCHUNKS),
-    osciDriver(true)
+    QObject(parent), clientID(clientID), nWorkerThreads(SPROC_NBUFFERCHUNKS), pktCounter(0),
+    osciDriver(true), osciPoller(this), usedBuffer(SPROC_NBUFFERCHUNKS)
 {
     osciPoller.setInterval(1000);           // Set polling intervall in msecs
     connect(&osciPoller, SIGNAL(timeout()), this, SLOT(pollOsciForData()));

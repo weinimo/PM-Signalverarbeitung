@@ -4,9 +4,14 @@
 #include "vxi11/vxi11_user.h"
 #include "signalprocdispatcher.h"
 
-void cmdHelp(char * progname)
+
+QTextStream cin(stdin, QIODevice::ReadOnly);
+QTextStream cout(stdout, QIODevice::WriteOnly);
+QTextStream cerr(stderr, QIODevice::WriteOnly);
+
+void cmdHelp(QString progname)
 {
-    using namespace std;
+    //using namespace std;
     cout << endl;
     cout << "Signal processing program for direction finding." << endl;
     cout << endl;
@@ -23,10 +28,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QTextStream cin(stdin, QIODevice::ReadOnly);
-    QTextStream cout(stdout, QIODevice::WriteOnly);
-    QTextStream cerr(stderr, QIODevice::WriteOnly);
-
     // Command line parsing
     QRegExp clientIDRegEx("^[0-9]{1,3}$");                              // Matches everything from 0 to 999.
     QRegExp demoModeRegEx("--demo");
@@ -36,20 +37,21 @@ int main(int argc, char *argv[])
     QStringList cmdline_args = a.arguments();
 
     // command line argument parsing
-    for (int i = 1; i <= cmdline_args.size(); i++) {
-        if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 )           // Do we use demo mode?
+    for (int i = 1; i < cmdline_args.size(); i++) {			// Eg. cmdline_args = ./app --demo 42 => size() = 3 => iterate i from 1 to size-1
+	if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 )          // Do we use demo mode?
             demoMode = true;
-        else if ( clientIDRegEx.indexIn(cmdline_args.at(i)) != -1 )     // Try to get the client ID.
+	else if ( clientIDRegEx.indexIn(cmdline_args.at(i)) != -1 ) {   // Try to get the client ID.
             clientID = cmdline_args.at(i).toInt();
+	}
         else {
-	    cerr << "Error: Unknown argument: " << cmdline_args.at(i);
-            cmdHelp(argv[0]);
+	    cerr << "Error: Unknown argument: " << cmdline_args.at(i) << endl;;
+	    cmdHelp(cmdline_args.at(0));
         }
     }
 
     if (clientID < 0 || clientID > 255) {                               // Make sure clientID fits in the uint8_t clientID field.
-	 cerr << "Error: Client ID must be 255 or less.";
-         cmdHelp(argv[0]);
+	 cerr << "Error: Client ID must be 255 or less." << endl;
+	 cmdHelp(cmdline_args.at(0));
     }
 
 

@@ -11,7 +11,7 @@ void SignalProcWorker::run()
 
 }
 
-procdata SignalProcWorker::calc(bufferchunk * sampleData, int32_t dataSize)
+void SignalProcWorker::calc(bufferchunk * sampleData, int32_t dataSize)
 {
     procdata data;
     emit finished(data);
@@ -19,5 +19,5 @@ procdata SignalProcWorker::calc(bufferchunk * sampleData, int32_t dataSize)
 
 int32_t SignalProcWorker::calcDirUsingXCorr()
 {
-
+    return 0; //TODO
 }
