@@ -14,11 +14,11 @@ public:
 private:
     bool                    demoMode;
     void                    writeOsciSettings();
-    void                    getDemoData(bufferchunk *const chunk);
-    void                    getSampleData(bufferchunk *const chunk);
+    void                    getDemoData(bufferchunk * const chunk);
+    void                    getSampleData(bufferchunk * const chunk);
 
 signals:
-    void                    chunkFilled(bufferchunk * sampledata);
+    void                    chunkFilled(bufferchunk * const sampledata);
 
 public slots:
     void                    fillChunk(bufferchunk * const chunk);

@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
     }
 
     if (clientID < 0 || clientID > 255) {                                       // Make sure clientID fits in the uint8_t clientID field.
-     cerr << "Error: No client ID given or client ID value out of range (0 <= client ID <= 255)." << endl;
-     cmdHelp(cmdline_args.at(0));
+        cerr << "Error: No client ID given or client ID value out of range (0 <= client ID <= 255)." << endl;
+        cmdHelp(cmdline_args.at(0));
     }
 
 

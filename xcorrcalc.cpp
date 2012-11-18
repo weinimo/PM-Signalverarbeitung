@@ -15,7 +15,7 @@ int32_t XCorrCalc::calcDirection()
 }
 
 
-procdata XCorrCalc::calc(bufferchunk *sampledata)
+procdata XCorrCalc::calc(bufferchunk *const sampledata)
 {
     procdata data;
     return data; //TODO

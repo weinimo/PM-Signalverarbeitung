@@ -1,6 +1,7 @@
 #include "signalprocworker.h"
-
 #include "signalprocdispatcher.h"
+
+#include <time.h> // TODO entfernen
 
 SignalProcWorker::SignalProcWorker()
 {
@@ -11,10 +12,11 @@ void SignalProcWorker::run()
 
 }
 
-void SignalProcWorker::calc(bufferchunk * const sampleData, int32_t dataSize)
+void SignalProcWorker::calc(bufferchunk * const sampleData)
 {
     procdata data;
-    emit calcFinished(data);
+    sleep(2);
+    emit calcFinished(data, sampleData);
     emit finished();
 }
 

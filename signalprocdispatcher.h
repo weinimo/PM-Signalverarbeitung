@@ -38,7 +38,7 @@ signals:
 
 public slots:
     void                    procChunk(bufferchunk * const chunk);
-    void                    sendToGui(procdata data);
+    void                    sendToGui(procdata data, bufferchunk * const chunk);
 
 private slots:
     void                    pollOsciForData();

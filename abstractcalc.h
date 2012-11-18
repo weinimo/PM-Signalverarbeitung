@@ -8,7 +8,7 @@ class AbstractCalc
 public:
     AbstractCalc();
     virtual void clone() = 0;
-    virtual procdata calc(bufferchunk * sampledata) = 0;
+    virtual procdata calc(bufferchunk * const sampledata) = 0;
 
 protected:
     int32_t calcPowerLevel();

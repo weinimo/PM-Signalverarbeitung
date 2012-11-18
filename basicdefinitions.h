@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define SPROC_NBUFFERCHUNKS      2
+#define SPROC_NBUFFERCHUNKS     3
 #define SPROC_SAMPLEDATASIZE 1000                                               // Size of a buffer chunk in 32 bit words. Number must be multiple of 2.
 
 

@@ -11,13 +11,13 @@ class SignalProcWorker : public QObject
 public:
     explicit        SignalProcWorker();
     void            run();
-    void            calc(bufferchunk * const sampleData, int32_t dataSize);
+    void            calc(bufferchunk * const sampleData);
 
 private:
     int32_t         calcDirUsingXCorr();
 
 signals:
-    void            calcFinished(procdata data);
+    void            calcFinished(procdata data, bufferchunk * const chunk);
     void            finished();
 public slots:
 };
