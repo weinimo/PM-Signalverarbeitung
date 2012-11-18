@@ -12,10 +12,9 @@ class SignalProcDispatcher : public QObject
 {
     Q_OBJECT
 public:
-    //explicit SignalProcDispatcher(QObject *parent = 0);
     explicit                SignalProcDispatcher(QObject *parent, int clientID, bool demoMode);
     static bufferchunk *    getUsedBufferChunk();
-    static void             freeUsedBufferChunk(bufferchunk * chunk, procdata data);
+    static void             freeUsedBufferChunk(bufferchunk * const chunk, procdata data);
 
 private:
     int const               clientID;
@@ -34,18 +33,19 @@ private:
     QThread                 thread[SPROC_NBUFFERCHUNKS];
     QSemaphore              usedBuffer;
 
-    void                    sendToGui(procdata data);
-    void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);
+    //void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);
     void                    getDataFromOsci();
-    
+
 signals:
-    void                    bufferReadyForSampledata(bufferchunk * chunk);
-    
+    void                    chunkReadyForFilling(bufferchunk * const chunk);
+
 public slots:
+    void                    procChunk(bufferchunk * const chunk);
+    void                    sendToGui(procdata data);
 
 private slots:
     void                    pollOsciForData();
-    
+
 };
 
 #endif // SIGNALPROCDISPATCHER_H

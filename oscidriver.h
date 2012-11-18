@@ -19,10 +19,10 @@ private:
                                           int32_t datasize);
 
 signals:
-    void                    finished(int32_t * sampledata);
+    void                    chunkFilled(bufferchunk * sampledata);
 
 public slots:
-    void                    fillBuffer(bufferchunk * const chunk);
+    void                    fillChunk(bufferchunk * const chunk);
 };
 
 #endif // OSCIDRIVER_H

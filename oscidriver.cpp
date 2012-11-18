@@ -12,11 +12,12 @@ void OsciDriver::writeOsciSettings()
 {
 }
 
-void OsciDriver::fillBuffer(bufferchunk * const chunk)
+void OsciDriver::fillChunk(bufferchunk * const chunk)
 {
     if (demoMode)
         getDemoData(chunk->data, SPROC_SAMPLEDATASIZE);
     // TODO else
+    emit chunkFilled(chunk);
 }
 
 void OsciDriver::getDemoData(int32_t * const sampledata, int32_t datasize)
