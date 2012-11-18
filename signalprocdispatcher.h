@@ -25,15 +25,12 @@ private:
 
     NetworkDriver           netDriver;
     OsciDriver              osciDriver;
-    SignalProcWorker        worker[SPROC_NBUFFERCHUNKS];
 
     QSemaphore              freeBuffer;
     QMutex                  m;
     QTimer                  osciPoller;
-    QThread                 thread[SPROC_NBUFFERCHUNKS];
     QSemaphore              usedBuffer;
 
-    //void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);
     void                    getDataFromOsci();
 
 signals:

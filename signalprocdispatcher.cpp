@@ -14,12 +14,6 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool d
     connect(&osciDriver, SIGNAL(chunkFilled(bufferchunk*)),                     // Dispatch chunk processing
             this, SLOT(procChunk(bufferchunk*const)));
 
-    for (int i = 0; i < nWorkerThreads; i++) {
-        worker[i].moveToThread(&thread[i]);
-        connect(&worker[i], SIGNAL(calcFinished(procdata),
-                this, SLOT(sendToGui(procdata)));
-    }
-
     osciPoller.start();
 }
 
@@ -36,13 +30,9 @@ void SignalProcDispatcher::freeUsedBufferChunk(bufferchunk * const chunk, procda
 
 void SignalProcDispatcher::sendToGui(procdata data)
 {
+    QMutexLocker locker(&m);                                                    // Could be access by multiple threads at the same time.
     // TODO
 }
-
-/*void SignalProcDispatcher::fillFreeBufferChunk(int32_t * data, int32_t dataSize)
-{
-    // TODO
-}*/
 
 void SignalProcDispatcher::pollOsciForData()
 {
@@ -53,11 +43,26 @@ void SignalProcDispatcher::pollOsciForData()
             if (true == usedBufferChunks[i])
                 break;
         usedBufferChunks[i] = false;                                            // Mark chunk used.
-        emit bufferReadyForSampledata(&sampleBuffer[i]);
+        emit chunkReadyForFilling(&sampleBuffer[i]);
     }
 }
 
 void SignalProcDispatcher::getDataFromOsci()
 {
     // TODO
+}
+
+
+void SignalProcDispatcher::procChunk(bufferchunk *const chunk)
+{
+    QThread * thread = new QThread;
+    SignalProcWorker * worker = new SignalProcWorker();
+    worker->moveToThread(thread);
+    connect(thread, SIGNAL(started()), worker, SLOT(process()));
+    connect(worker, SIGNAL(calcFinished(procdata)), this, SLOT(sendToGui(procdata)));
+    connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
+    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
+
 }

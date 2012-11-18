@@ -14,9 +14,8 @@ public:
 private:
     bool                    demoMode;
     void                    writeOsciSettings();
-    void                    getDemoData(int32_t * const sampledata, int32_t datasize);
-    void                    getSampleData(int const channel, int32_t * const sampledata,
-                                          int32_t datasize);
+    void                    getDemoData(bufferchunk *const chunk);
+    void                    getSampleData(bufferchunk *const chunk);
 
 signals:
     void                    chunkFilled(bufferchunk * sampledata);
