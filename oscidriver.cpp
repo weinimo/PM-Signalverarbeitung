@@ -1,4 +1,5 @@
 #include "oscidriver.h"
+#include "signalprocdispatcher.h"
 
 OsciDriver::OsciDriver(bool demoMode):
     demoMode(demoMode)
@@ -12,13 +13,13 @@ void OsciDriver::writeOsciSettings()
 {
 }
 
-void OsciDriver::fillChunk(bufferchunk * chunk)
+void OsciDriver::fillChunk(int chunknum)
 {
     if (demoMode)
-        getDemoData(chunk);
+        getDemoData(SignalProcDispatcher::getBufferChunk(chunknum));
     else
-        getSampleData(chunk);
-    emit chunkFilled(chunk);
+        getSampleData(SignalProcDispatcher::getBufferChunk(chunknum));
+    emit chunkFilled(chunknum);
 }
 
 /**
@@ -31,7 +32,7 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
     // simulate a random delay
     uint32_t randdly = qrand() % 7;
 
-//#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 ; i++) {
         chunk->channels.first[i] = i % 300;
         chunk->channels.second[i+randdly] = i % 300;

@@ -54,14 +54,8 @@ int main(int argc, char *argv[])
         cmdHelp(cmdline_args.at(0));
     }
 
-
     SignalProcDispatcher sProc(0, clientID, demoMode);                          // Now let's start...
     sProc.setup();
 
-    /*connect(&(sProc.osciPoller), SIGNAL(timeout()), &sProc, SLOT(pollOsciForData()));     // Tries to get sample data
-        connect(&sProc, SIGNAL(chunkReadyForFilling(bufferchunk*)),              // Fills buffer chunks with sample data
-                &(sProc.osciDriver), SLOT(fillChunk(bufferchunk*)));
-        connect(&(sProc.osciDriver), SIGNAL(chunkFilled(bufferchunk*)),                // Dispatch chunk processing
-                &sProc, SLOT(procChunk(bufferchunk*)));*/
     return a.exec();
 }

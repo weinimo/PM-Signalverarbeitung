@@ -3,8 +3,8 @@
 
 #include <time.h> // TODO entfernen
 
-SignalProcWorker::SignalProcWorker(bufferchunk *const chunk) :
-    chunk(chunk)
+SignalProcWorker::SignalProcWorker(int chunknum) :
+    chunknum(chunknum)
 {
 }
 
@@ -12,8 +12,8 @@ SignalProcWorker::SignalProcWorker(bufferchunk *const chunk) :
 void SignalProcWorker::calc()
 {
     procdata data;
-    sleep(5);
-    emit calcFinished(data, (int)chunk);
+    sleep(15);
+    emit calcFinished(data, chunknum);
     emit finished();
 }
 

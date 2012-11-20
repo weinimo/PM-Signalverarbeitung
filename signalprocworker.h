@@ -9,15 +9,15 @@ class SignalProcWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit        SignalProcWorker(bufferchunk * const chunk);
+    explicit        SignalProcWorker(int chunknum);
 
 private:
-    bufferchunk * const chunk;
+    int             chunknum;
     int32_t         calcDirUsingXCorr();
 
 signals:
     //void            calcFinished(procdata data, bufferchunk * const chunk);
-    void            calcFinished(procdata data, int chunk);
+    void            calcFinished(procdata data, int chunknum);
     void            finished();
 public slots:
     void            calc();

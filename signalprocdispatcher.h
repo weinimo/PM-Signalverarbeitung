@@ -13,37 +13,34 @@ class SignalProcDispatcher : public QObject
     Q_OBJECT
 public:
     explicit                SignalProcDispatcher(QObject *parent, int clientID, bool demoMode);
-    static bufferchunk *    getUsedBufferChunk();
-    static void             freeUsedBufferChunk(bufferchunk * const chunk, procdata data);
-
-    NetworkDriver           netDriver;//TODO
-    OsciDriver              osciDriver;
-
-    QTimer                  osciPoller;
+    int                     getFreeBufferChunkNum();
+    static bufferchunk *    getBufferChunk(int chunknum);
+    void                    freeUsedBufferChunk(int chunknum);
 
     void                    setup();
 
+    static bufferchunk      sampleBuffer[SPROC_NBUFFERCHUNKS]; // TODO private
+
 private:
     int const               clientID;
-    int const               nWorkerThreads;
-    uint32_t                pktCounter;
-    bufferchunk             sampleBuffer[SPROC_NBUFFERCHUNKS];
-    bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
-
     QSemaphore              freeBuffer;
     QMutex                  m;
-    QSemaphore              usedBuffer;
+    NetworkDriver           netDriver;
+    OsciDriver              osciDriver;
+    QTimer                  osciPoller;
+    uint32_t                pktCounter;
+    bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
     void                    getDataFromOsci();
 
 signals:
-    void                    chunkReadyForFilling(bufferchunk * chunk);
+    void                    chunkReadyForFilling(int chunknum);
 
 public slots:
-    void                    procChunk(bufferchunk *chunk);
+    void                    procChunk(int chunknum);
     void                    pollOsciForData();
     //void                    sendToGui(procdata data, bufferchunk * const chunk);
-    void                    sendToGui(procdata data, int chunk);
+    void                    sendToGui(procdata data, int chunknum);
 
 };
 

@@ -1,9 +1,12 @@
+#include <assert.h>
+
 #include "signalprocdispatcher.h"
 
+bufferchunk SignalProcDispatcher::sampleBuffer[SPROC_NBUFFERCHUNKS];
 
 SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool demoMode) :
-    QObject(parent), clientID(clientID), nWorkerThreads(SPROC_NBUFFERCHUNKS), pktCounter(0),
-    osciDriver(demoMode), freeBuffer(SPROC_NBUFFERCHUNKS), osciPoller(this)
+    QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
+    osciDriver(demoMode), osciPoller(this), pktCounter(0)
 {
     osciPoller.setInterval(1000);                                               // Set polling intervall in msecs
 
@@ -17,33 +20,44 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool d
     qRegisterMetaType<procdata*>("procdata*");
 }
 
+int SignalProcDispatcher::getFreeBufferChunkNum()
+{
+    QMutexLocker locker(&m);
+    for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
+        if (usedBufferChunks[i] == false){
+            qDebug() << "getFreeBufferChunk(): " << i;
+            usedBufferChunks[i] = true;
+            return i;
+        }
+    qDebug() << "getFreeBufferChunk(): ERROR: Method was called when no buffer chunk was free.";
+    assert(0);
+}
+
+bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
+{
+    if (chunknum >= 0 && chunknum < SPROC_NBUFFERCHUNKS)
+        return &SignalProcDispatcher::sampleBuffer[chunknum];
+    else
+        assert(0);
+}
+
 void SignalProcDispatcher::setup()
 {
     // Set up connections
     connect(&osciPoller, SIGNAL(timeout()), this, SLOT(pollOsciForData()));     // Tries to get sample data
-    connect(this, SIGNAL(chunkReadyForFilling(bufferchunk*)),              // Fills buffer chunks with sample data
-            &osciDriver, SLOT(fillChunk(bufferchunk*)));
-    connect(&osciDriver, SIGNAL(chunkFilled(bufferchunk*)),                // Dispatch chunk processing
-            this, SLOT(procChunk(bufferchunk*)));
+    connect(this, SIGNAL(chunkReadyForFilling(int)),              // Fills buffer chunks with sample data
+            &osciDriver, SLOT(fillChunk(int)));
+    connect(&osciDriver, SIGNAL(chunkFilled(int)),                // Dispatch chunk processing
+            this, SLOT(procChunk(int)));
     osciPoller.start();
 }
 
-void SignalProcDispatcher::sendToGui(procdata data, int chunka)
+void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
     // TODO
 
-    bufferchunk * chunk = (bufferchunk*)chunka;//TOTEST
-
-    QTextStream cin(stdin, QIODevice::ReadOnly);
-    QTextStream cout(stdout, QIODevice::WriteOnly);
-    QTextStream cerr(stderr, QIODevice::WriteOnly);
-    QMutexLocker locker(&m);
-    int i = 0;
-    while(&sampleBuffer[i] != chunk)                                            // Find the right chunk number.
-        i++;
-    cout << "sendToGui(). i: " << i << endl;
-    usedBufferChunks[i] = false;                                                // Mark chunk unused.
-    freeBuffer.release();
+    qDebug() << "sendToGui(). chunknum: " << chunknum;
+    freeUsedBufferChunk(chunknum);
 
     netDriver.sendData(data);
 }
@@ -51,24 +65,19 @@ void SignalProcDispatcher::sendToGui(procdata data, int chunka)
 void SignalProcDispatcher::pollOsciForData()
 {
     // TODO
-    QTextStream cin(stdin, QIODevice::ReadOnly);
-    QTextStream cout(stdout, QIODevice::WriteOnly);
-    QTextStream cerr(stderr, QIODevice::WriteOnly);
-    cout << freeBuffer.available() << endl;
+    qDebug() << "pollOsciForData(): freeBuffer.available() "
+             << freeBuffer.available();
     if (freeBuffer.tryAcquire(1, 700)) {                                        // Try for 700 msecs to get a free Buffer chunk.
-        int i = 0;
-        while (i < SPROC_NBUFFERCHUNKS && true == usedBufferChunks[i])                                     // Find first unused buffer..
-            i++;
-        cout << "pollOsciForData(). i: " << i << endl;
-        usedBufferChunks[i] = true;                                             // Mark chunk used.
-        emit chunkReadyForFilling(&sampleBuffer[i]);
+        int chknum = getFreeBufferChunkNum();
+        qDebug() << "pollOsciForData(). chknum: " << chknum;
+        emit chunkReadyForFilling(chknum);
     }
 }
 
-void SignalProcDispatcher::procChunk(bufferchunk * chunk)
+void SignalProcDispatcher::procChunk(int chunknum)
 {
     QThread * thread = new QThread;
-    SignalProcWorker * worker = new SignalProcWorker(chunk);
+    SignalProcWorker * worker = new SignalProcWorker(chunknum);
     worker->moveToThread(thread);
     connect(thread, SIGNAL(started()), worker, SLOT(calc()));
     //connect(worker, SIGNAL(calcFinished(procdata, bufferchunk * const)),
@@ -79,4 +88,12 @@ void SignalProcDispatcher::procChunk(bufferchunk * chunk)
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();
+}
+
+
+void SignalProcDispatcher::freeUsedBufferChunk(int chunknum)
+{
+    qDebug() << "freeUsedBufferChunk(): chunknum " << chunknum;
+    usedBufferChunks[chunknum] = false;
+    freeBuffer.release();
 }
