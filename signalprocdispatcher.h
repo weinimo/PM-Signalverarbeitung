@@ -16,6 +16,13 @@ public:
     static bufferchunk *    getUsedBufferChunk();
     static void             freeUsedBufferChunk(bufferchunk * const chunk, procdata data);
 
+    NetworkDriver           netDriver;//TODO
+    OsciDriver              osciDriver;
+
+    QTimer                  osciPoller;
+
+    void                    setup();
+
 private:
     int const               clientID;
     int const               nWorkerThreads;
@@ -23,25 +30,20 @@ private:
     bufferchunk             sampleBuffer[SPROC_NBUFFERCHUNKS];
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
-    NetworkDriver           netDriver;
-    OsciDriver              osciDriver;
-
     QSemaphore              freeBuffer;
     QMutex                  m;
-    QTimer                  osciPoller;
     QSemaphore              usedBuffer;
 
     void                    getDataFromOsci();
 
 signals:
-    void                    chunkReadyForFilling(bufferchunk * const chunk);
+    void                    chunkReadyForFilling(bufferchunk * chunk);
 
 public slots:
-    void                    procChunk(bufferchunk * const chunk);
-    void                    sendToGui(procdata data, bufferchunk * const chunk);
-
-private slots:
+    void                    procChunk(bufferchunk *chunk);
     void                    pollOsciForData();
+    //void                    sendToGui(procdata data, bufferchunk * const chunk);
+    void                    sendToGui(procdata data, int chunk);
 
 };
 

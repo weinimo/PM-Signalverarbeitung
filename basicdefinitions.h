@@ -3,12 +3,14 @@
 
 #include <stdint.h>
 
-#define SPROC_NBUFFERCHUNKS     3
+#include <QMetaType>
+
+#define SPROC_NBUFFERCHUNKS     1
 #define SPROC_SAMPLEDATASIZE 1000                                               // Size of a buffer chunk in 32 bit words. Number must be multiple of 2.
 
 
-typedef union {
-    struct
+typedef union bc_union_t {
+    struct bc_struct_t
     {
         int32_t         first[SPROC_SAMPLEDATASIZE/2];
         int32_t         second[SPROC_SAMPLEDATASIZE/2];
@@ -26,6 +28,13 @@ typedef union {
         uint16_t        powerLevel;
     } fields;
     uint32_t            words[2];
+    uint64_t            doubleword;
 } procdata;
+
+Q_DECLARE_METATYPE(bufferchunk)
+Q_DECLARE_METATYPE(bufferchunk*)
+//Q_DECLARE_METATYPE(bufferchunk*const)
+Q_DECLARE_METATYPE(procdata)
+Q_DECLARE_METATYPE(procdata*)
 
 #endif // BASICDEFINITIONS_H

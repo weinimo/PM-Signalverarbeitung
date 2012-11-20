@@ -12,7 +12,7 @@ void OsciDriver::writeOsciSettings()
 {
 }
 
-void OsciDriver::fillChunk(bufferchunk * const chunk)
+void OsciDriver::fillChunk(bufferchunk * chunk)
 {
     if (demoMode)
         getDemoData(chunk);
@@ -31,7 +31,7 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
     // simulate a random delay
     uint32_t randdly = qrand() % 7;
 
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 ; i++) {
         chunk->channels.first[i] = i % 300;
         chunk->channels.second[i+randdly] = i % 300;

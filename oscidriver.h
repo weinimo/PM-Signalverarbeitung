@@ -18,10 +18,10 @@ private:
     void                    getSampleData(bufferchunk * const chunk);
 
 signals:
-    void                    chunkFilled(bufferchunk * const sampledata);
+    void                    chunkFilled(bufferchunk * sampledata);
 
 public slots:
-    void                    fillChunk(bufferchunk * const chunk);
+    void                    fillChunk(bufferchunk *chunk);
 };
 
 #endif // OSCIDRIVER_H
