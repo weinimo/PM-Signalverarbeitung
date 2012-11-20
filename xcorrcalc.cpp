@@ -4,8 +4,9 @@ XCorrCalc::XCorrCalc()
 {
 }
 
-void XCorrCalc::clone()
+AbstractCalc *XCorrCalc::clone()
 {
+    return new XCorrCalc();
 }
 
 

@@ -1,18 +1,25 @@
 #include "signalprocworker.h"
 #include "signalprocdispatcher.h"
+#include "abstractcalc.h"
 
 #include <time.h> // TODO entfernen
 
 SignalProcWorker::SignalProcWorker(int chunknum) :
     chunknum(chunknum)
 {
+    calcInst = AbstractCalc::makeInst();
 }
 
 
 void SignalProcWorker::calc()
 {
     procdata data;
-    sleep(15);
+    sleep(7);
+
+    AbstractCalc * calcInst = AbstractCalc::makeInst(0);         // Create a XCorrCalc Instance
+    data = calcInst->calc(SignalProcDispatcher::getBufferChunk(chunknum));
+    delete calc;
+
     emit calcFinished(data, chunknum);
     emit finished();
 }

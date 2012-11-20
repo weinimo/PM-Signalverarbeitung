@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "basicdefinitions.h"
+#include "abstractcalc.h"
 
 class SignalProcWorker : public QObject
 {
@@ -12,6 +13,7 @@ public:
     explicit        SignalProcWorker(int chunknum);
 
 private:
+    AbstractCalc *  calcInst;
     int             chunknum;
     int32_t         calcDirUsingXCorr();
 
