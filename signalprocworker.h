@@ -13,9 +13,7 @@ public:
     explicit        SignalProcWorker(int chunknum);
 
 private:
-    AbstractCalc *  calcInst;
     int             chunknum;
-    int32_t         calcDirUsingXCorr();
 
 signals:
     //void            calcFinished(procdata data, bufferchunk * const chunk);

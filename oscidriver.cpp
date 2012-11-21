@@ -1,16 +1,43 @@
 #include "oscidriver.h"
 #include "signalprocdispatcher.h"
+#include "vxi11/vxi11_user.h"
 
-OsciDriver::OsciDriver(bool demoMode):
-    demoMode(demoMode)
+OsciDriver::OsciDriver(QString ipaddress, bool demoMode):
+    demoMode(demoMode), ipaddr(ipaddress)
 {
-    if (!demoMode)
+    if (!demoMode) {
+        clink = new CLINK;
+        int ret = vxi11_open_device(ipaddr.toAscii(), clink);
+
+        if (ret != 0) {
+            printf("Error: could not open device %s, quitting\n",ipaddr.toAscii().data());
+            exit(2);
+        }
         writeOsciSettings();
+    }
 }
 
 
 void OsciDriver::writeOsciSettings()
 {
+
+}
+
+long OsciDriver::sendCmd(QString cmd)
+{
+    long bytes_returned = 0;
+    int ret = vxi11_send(clink, cmd.toAscii());
+    if (cmd.contains("?")) {
+        bytes_returned = vxi11_receive(clink, readBuffer, OSCI_RDBUFFERSIZE);
+        if (bytes_returned > 0) {
+            qDebug() << readBuffer;
+            // TODO Verarbeitung
+        }
+        else if (bytes_returned == -15) {
+            printf("*** [ NOTHING RECEIVED ] ***\n");
+        }
+    }
+    return bytes_returned;
 }
 
 void OsciDriver::fillChunk(int chunknum)
@@ -41,6 +68,7 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
 
 void OsciDriver::getSampleData(bufferchunk * const chunk)
 {
+    memset(readBuffer, 0, OSCI_RDBUFFERSIZE);                                   // Init read buffer
     // TODO
 }
 

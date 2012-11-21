@@ -7,11 +7,10 @@ class XCorrCalc : public AbstractCalc
 {
 public:
     XCorrCalc();
-    AbstractCalc *      clone();
     procdata            calc(bufferchunk * const sampledata);
 
 private:
-    int32_t             calcDirection();
+    int32_t             calcDirection(bufferchunk * const sampledata);
 };
 
 #endif // XCORRCALC_H

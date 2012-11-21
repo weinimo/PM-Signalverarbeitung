@@ -1,6 +1,6 @@
 #include "signalprocworker.h"
 #include "signalprocdispatcher.h"
-#include "abstractcalc.h"
+#include "xcorrcalc.h"
 
 #include <time.h> // TODO entfernen
 
@@ -13,18 +13,11 @@ SignalProcWorker::SignalProcWorker(int chunknum) :
 void SignalProcWorker::calc()
 {
     procdata data;
-    sleep(7);
+    sleep(3);
 
-    AbstractCalc * calcInst = AbstractCalcFactory::makeInst(0);         // Create a XCorrCalc Instance
-    data = calcInst->calc(SignalProcDispatcher::getBufferChunk(chunknum));
-    delete calcInst;
+    XCorrCalc c;         // Create a XCorrCalc Instance
+    data = c.calc(SignalProcDispatcher::getBufferChunk(chunknum));
 
     emit calcFinished(data, chunknum);
     emit finished();
-}
-
-int32_t SignalProcWorker::calcDirUsingXCorr()
-{
-    // TODO: try "#pragma omp parallel for" for parallel loop execution.
-    return 0; //TODO
 }

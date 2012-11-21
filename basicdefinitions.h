@@ -5,17 +5,17 @@
 
 #include <QMetaType>
 
-#define SPROC_NBUFFERCHUNKS     5
+#define SPROC_NBUFFERCHUNKS     3
 #define SPROC_SAMPLEDATASIZE 1000                                               // Size of a buffer chunk in 32 bit words. Number must be multiple of 2.
 
 
 typedef union bc_union_t {
     struct bc_struct_t
     {
-        int32_t         first[SPROC_SAMPLEDATASIZE/2];
-        int32_t         second[SPROC_SAMPLEDATASIZE/2];
+        float           first[SPROC_SAMPLEDATASIZE/2];
+        float           second[SPROC_SAMPLEDATASIZE/2];
     } channels;
-    int32_t             data[SPROC_SAMPLEDATASIZE];
+    float               data[SPROC_SAMPLEDATASIZE];
 } bufferchunk;
 
 typedef union {

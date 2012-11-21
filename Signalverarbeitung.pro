@@ -23,7 +23,10 @@ SOURCES += main.cpp \
     signalprocworker.cpp \
     abstractcalc.cpp \
     xcorrcalc.cpp \
-    oscidriver.cpp
+    oscidriver.cpp \
+    vxi11/vxi11_user.cc \
+    vxi11/vxi11_clnt.c \
+    vxi11/vxi11_xdr.c
 
 HEADERS += \
     signalprocdispatcher.h \
@@ -32,4 +35,5 @@ HEADERS += \
     signalprocworker.h \
     abstractcalc.h \
     xcorrcalc.h \
-    oscidriver.h
+    oscidriver.h \
+    vxi11/vxi11_user.h

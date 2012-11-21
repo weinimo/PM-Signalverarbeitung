@@ -28,20 +28,25 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     // Command line parsing
+    QRegExp osciIPRegEx("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$");
     QRegExp clientIDRegEx("^[0-9]{1,3}$");                                      // Matches everything from 0 to 999.
     QRegExp demoModeRegEx("--demo");
     bool demoMode = false;
     int clientID = -1;
+    QString ipaddr;
 
     QStringList cmdline_args = a.arguments();
 
     // command line argument parsing
     for (int i = 1; i < cmdline_args.size(); i++) {                             // Eg. cmdline_args = ./app --demo 42 => size() = 3 => iterate i from 1 to size-1
         if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 )  {               // Do we use demo mode?
-                demoMode = true;
+            demoMode = true;
         }
         else if ( clientIDRegEx.indexIn(cmdline_args.at(i)) != -1 ) {           // Try to get the client ID.
-                clientID = cmdline_args.at(i).toInt();
+            clientID = cmdline_args.at(i).toInt();
+        }
+        else if ( osciIPRegEx.indexIn(cmdline_args.at(i)) != -1 ) {
+            ipaddr = cmdline_args.at(i);
         }
         else {
             cerr << "Error: Unknown argument: " << cmdline_args.at(i) << endl;;
@@ -54,7 +59,7 @@ int main(int argc, char *argv[])
         cmdHelp(cmdline_args.at(0));
     }
 
-    SignalProcDispatcher sProc(0, clientID, demoMode);                          // Now let's start...
+    SignalProcDispatcher sProc(0, ipaddr, clientID, demoMode);                  // Now let's start...
     sProc.setup();
 
     return a.exec();

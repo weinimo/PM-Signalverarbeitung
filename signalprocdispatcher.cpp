@@ -4,11 +4,12 @@
 
 bufferchunk SignalProcDispatcher::sampleBuffer[SPROC_NBUFFERCHUNKS];
 
-SignalProcDispatcher::SignalProcDispatcher(QObject *parent, int clientID, bool demoMode) :
+SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP,
+                                           int clientID, bool demoMode) :
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
-    osciDriver(demoMode), osciPoller(this), pktCounter(0)
+    osciDriver(osciIP, demoMode), osciPoller(this), pktCounter(0)
 {
-    osciPoller.setInterval(1000);                                               // Set polling intervall in msecs
+    osciPoller.setInterval(700);                                               // Set polling intervall in msecs
 
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         usedBufferChunks[i] = false;
@@ -25,8 +26,10 @@ int SignalProcDispatcher::getFreeBufferChunkNum()
     QMutexLocker locker(&m);
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         if (usedBufferChunks[i] == false){
-            qDebug() << "getFreeBufferChunk(): " << i;
+            //qDebug() << "getFreeBufferChunk(): " << i;
             usedBufferChunks[i] = true;
+            memset(&SignalProcDispatcher::sampleBuffer[i],
+                   0, 4*SPROC_SAMPLEDATASIZE);
             return i;
         }
     qDebug() << "getFreeBufferChunk(): ERROR: Method was called when no buffer chunk was free.";
@@ -35,10 +38,10 @@ int SignalProcDispatcher::getFreeBufferChunkNum()
 
 bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
 {
-    if (chunknum >= 0 && chunknum < SPROC_NBUFFERCHUNKS)
+    if (chunknum >= 0 && chunknum < SPROC_NBUFFERCHUNKS) {
         return &SignalProcDispatcher::sampleBuffer[chunknum];
-    else
-        assert(0);
+    }
+    else assert(0);
 }
 
 void SignalProcDispatcher::setup()
@@ -56,7 +59,7 @@ void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
     // TODO
 
-    qDebug() << "sendToGui(). chunknum: " << chunknum;
+    //qDebug() << "sendToGui(). chunknum: " << chunknum;
     freeUsedBufferChunk(chunknum);
 
     netDriver.sendData(data);
@@ -64,12 +67,11 @@ void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 
 void SignalProcDispatcher::pollOsciForData()
 {
-    // TODO
-    qDebug() << "pollOsciForData(): freeBuffer.available() "
-             << freeBuffer.available();
+    //qDebug() << "pollOsciForData(): freeBuffer.available() "
+    //         << freeBuffer.available();
     if (freeBuffer.tryAcquire(1, 700)) {                                        // Try for 700 msecs to get a free Buffer chunk.
         int chknum = getFreeBufferChunkNum();
-        qDebug() << "pollOsciForData(). chknum: " << chknum;
+        //qDebug() << "pollOsciForData(). chknum: " << chknum;
         emit chunkReadyForFilling(chknum);
     }
 }
@@ -93,7 +95,7 @@ void SignalProcDispatcher::procChunk(int chunknum)
 
 void SignalProcDispatcher::freeUsedBufferChunk(int chunknum)
 {
-    qDebug() << "freeUsedBufferChunk(): chunknum " << chunknum;
+    //qDebug() << "freeUsedBufferChunk(): chunknum " << chunknum;
     usedBufferChunks[chunknum] = false;
     freeBuffer.release();
 }

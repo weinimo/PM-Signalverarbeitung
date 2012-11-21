@@ -12,7 +12,7 @@ class SignalProcDispatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit                SignalProcDispatcher(QObject *parent, int clientID, bool demoMode);
+    explicit                SignalProcDispatcher(QObject *parent, QString osciIP, int clientID, bool demoMode);
     int                     getFreeBufferChunkNum();
     static bufferchunk *    getBufferChunk(int chunknum);
     void                    freeUsedBufferChunk(int chunknum);
