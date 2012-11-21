@@ -7,7 +7,6 @@
 SignalProcWorker::SignalProcWorker(int chunknum) :
     chunknum(chunknum)
 {
-    calcInst = AbstractCalc::makeInst(chunknum);
 }
 
 
@@ -16,7 +15,7 @@ void SignalProcWorker::calc()
     procdata data;
     sleep(7);
 
-    AbstractCalc * calcInst = AbstractCalc::makeInst(0);         // Create a XCorrCalc Instance
+    AbstractCalc * calcInst = AbstractCalcFactory::makeInst(0);         // Create a XCorrCalc Instance
     data = calcInst->calc(SignalProcDispatcher::getBufferChunk(chunknum));
     delete calcInst;
 

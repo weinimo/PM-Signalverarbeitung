@@ -1,15 +1,15 @@
 #include "abstractcalc.h"
 #include "xcorrcalc.h"
 
-AbstractCalc * AbstractCalc::calcPrototypes[] = {new XCorrCalc()};
+AbstractCalc * AbstractCalcFactory::calcPrototypes[] = {new XCorrCalc()};
 
 AbstractCalc::AbstractCalc()
 {
 }
 
-AbstractCalc * AbstractCalc::makeInst(int choice)
+AbstractCalc * AbstractCalcFactory::makeInst(int choice)
 {
-    return calcPrototypes[choice]->clone();
+    return AbstractCalcFactory::calcPrototypes[choice]->clone();
 }
 
 int32_t AbstractCalc::calcPowerLevel()
