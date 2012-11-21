@@ -7,7 +7,7 @@
 SignalProcWorker::SignalProcWorker(int chunknum) :
     chunknum(chunknum)
 {
-    calcInst = AbstractCalc::makeInst();
+    calcInst = AbstractCalc::makeInst(chunknum);
 }
 
 
@@ -18,7 +18,7 @@ void SignalProcWorker::calc()
 
     AbstractCalc * calcInst = AbstractCalc::makeInst(0);         // Create a XCorrCalc Instance
     data = calcInst->calc(SignalProcDispatcher::getBufferChunk(chunknum));
-    delete calc;
+    delete calcInst;
 
     emit calcFinished(data, chunknum);
     emit finished();

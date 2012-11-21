@@ -6,7 +6,7 @@ XCorrCalc::XCorrCalc()
 
 AbstractCalc *XCorrCalc::clone()
 {
-    return new XCorrCalc();
+    return new XCorrCalc;
 }
 
 

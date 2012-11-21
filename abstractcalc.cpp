@@ -1,7 +1,7 @@
 #include "abstractcalc.h"
 #include "xcorrcalc.h"
 
-AbstractCalc * AbstractCalc::calcPrototypes[] = {new XCorrCalc};
+AbstractCalc * AbstractCalc::calcPrototypes[] = {new XCorrCalc()};
 
 AbstractCalc::AbstractCalc()
 {
