@@ -63,7 +63,7 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
     else                qDebug() << "randdly " << randdly;
 
 //#pragma omp parallel for
-    for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 ; i++) {
+    for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 - randdly; i++) {
         if (0 == dlyChan) {
             chunk->channels.first[i+randdly] = i % 300;
             chunk->channels.second[i] = i % 300;
