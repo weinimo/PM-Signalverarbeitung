@@ -1,4 +1,5 @@
 #include "xcorrcalc.h"
+#include "libxcorr/xcorr.h"
 #include <QDebug>
 
 XCorrCalc::XCorrCalc()
@@ -13,38 +14,36 @@ XCorrCalc::XCorrCalc()
  */
 int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
 {
-    float xcorrVector[SPROC_SAMPLEDATASIZE - 1];
-    float chan1Vector[SPROC_SAMPLEDATASIZE - 1];
+    fftw_complex * ch1data, * ch2data, * result;
+    int const chDataSize = SPROC_SAMPLEDATASIZE / 2;
+    int const resultSize = 2 * chDataSize - 1;
 
-    int vectorSize = SPROC_SAMPLEDATASIZE - 1;
-    int chanDataSize = SPROC_SAMPLEDATASIZE / 2;
+    ch1data = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * chDataSize);
+    ch2data = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * chDataSize);
+    result  = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * resultSize);
 
-    memset(xcorrVector, 0, vectorSize * sizeof(float));
-    memset(chan1Vector, 0, (chanDataSize - 1) * sizeof(float));
-
-#pragma omp parallel for
-    for (int i = 0; i < chanDataSize; i++) {                                    // Prepare first channel vector
-        chan1Vector[(chanDataSize - 1) + i] =
-                sampledata->channels.first[i];
+    for (int i = 0; i < chDataSize; i++) {
+        ch1data[i][0] = sampledata->channels.first[i];                          // Store channel data as real values
+        ch2data[i][0] = sampledata->channels.second[i];
+        ch1data[i][1] = ch2data[i][1] = 0.0;                                    // No complex numbers
     }
 
-    float peakVal = 0.0F;                                                       // Stores the maximal value of the x-corr
-    int peakSampleNum = 0;                                                      // Stores the delay between the signals in sample periods.
+    xcorr(ch1data, ch2data, result, chDataSize);
 
-    for (int i = 0; i < chanDataSize; i++) {
-        for (int j = 0; j < vectorSize; j++) {                                  // Compute the x-corr calc.
-            xcorrVector[i] +=
-                    chan1Vector[j] * sampledata->channels.second[j];
-        }
-
-        if (xcorrVector[i] > peakVal) {                                         // Get the delay by finding the maximal value of xcorrVector
-            peakVal = xcorrVector[i];
-            peakSampleNum = i;
+    int delay = 0;      // Number of samples for the delay between both signals
+    int peakSampleNum = 0; //TODO
+    for (int i = 0; i < resultSize; i++) {
+        if (result[i][0] > peakSampleNum) {
+            peakSampleNum = result[i][0];
+            delay = chDataSize - 1 - i;
         }
     }
 
-    qDebug() << "peakSampleNum " << peakSampleNum;
-    return peakSampleNum; //TODO
+    qDebug() << "calcdly " << delay << "peakSampleNum " << peakSampleNum;
+    return delay; //TODO
 }
 
 

@@ -13,7 +13,7 @@ SignalProcWorker::SignalProcWorker(int chunknum) :
 void SignalProcWorker::calc()
 {
     procdata data;
-    sleep(3);
+    //sleep(3);
 
     XCorrCalc c;         // Create a XCorrCalc Instance
     data = c.calc(SignalProcDispatcher::getBufferChunk(chunknum));

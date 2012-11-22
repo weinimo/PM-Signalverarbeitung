@@ -57,12 +57,21 @@ void OsciDriver::fillChunk(int chunknum)
 void OsciDriver::getDemoData(bufferchunk * const chunk)
 {
     // simulate a random delay
-    uint32_t randdly = qrand() % 7;
+    int randdly = qrand() % 40;
+    int dlyChan = qrand() % 2;
+    if (0 == dlyChan)   qDebug() << "randdly " << randdly * (-1);
+    else                qDebug() << "randdly " << randdly;
 
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 ; i++) {
-        chunk->channels.first[i] = i % 300;
-        chunk->channels.second[i+randdly] = i % 300;
+        if (0 == dlyChan) {
+            chunk->channels.first[i+randdly] = i % 300;
+            chunk->channels.second[i] = i % 300;
+        }
+        else {
+            chunk->channels.first[i] = i % 300;
+            chunk->channels.second[i+randdly] = i % 300;
+        }
     }
 }
 
