@@ -12,8 +12,8 @@ TARGET = Signalverarbeitung
 CONFIG   += console
 CONFIG   -= app_bundle
 
-QMAKE_CXXFLAGS += -std=c++0x -fopenmp
-QMAKE_LFLAGS += -lgomp -lfftw3
+QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_LFLAGS += -lfftw3
 
 TEMPLATE = app
 

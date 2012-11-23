@@ -31,6 +31,27 @@ long OsciDriver::sendCmd(QString cmd)
         bytes_returned = vxi11_receive(clink, readBuffer, OSCI_RDBUFFERSIZE);
         if (bytes_returned > 0) {
             qDebug() << readBuffer;
+        }
+        else if (bytes_returned == -15) {
+            printf("*** [ NOTHING RECEIVED ] ***\n");
+        }
+    }
+    return bytes_returned;
+}
+
+long OsciDriver::sendCmd(QString cmd, double * result)
+{
+    long bytes_returned = 0;
+    int ret = vxi11_send(clink, cmd.toAscii());
+    if (cmd.contains("?")) {
+        bytes_returned = vxi11_receive(clink, readBuffer, OSCI_RDBUFFERSIZE);
+        if (bytes_returned > 0) {
+            qDebug() << readBuffer;
+            QString tString = readBuffer;
+            QStringList tStringList = tString.split(",");
+            for (int i = 0; i < tStringList.size(); i++) {
+                result[i] = tStringList.at(i).toDouble();       // TODO: Possible out-of-bounds if result is too small
+            }
             // TODO Verarbeitung
         }
         else if (bytes_returned == -15) {

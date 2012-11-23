@@ -23,7 +23,8 @@ private:
 
     void                    getDemoData(bufferchunk * const chunk);
     void                    getSampleData(bufferchunk * const chunk);
-    long sendCmd(QString cmd);
+    long                    sendCmd(QString cmd);
+    long                    sendCmd(QString cmd, double * result);
     void                    writeOsciSettings();
 
 signals:

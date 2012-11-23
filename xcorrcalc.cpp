@@ -34,10 +34,10 @@ int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
     }
 
     pthread_mutex_lock(&m_fftw);
-    qDebug() << "in pthread mutexlock";
+    //qDebug() << "in pthread mutexlock";
     xcorr(ch1data, ch2data, result, chDataSize);
     pthread_mutex_unlock(&m_fftw);
-    qDebug() << "nach pthread mutelock";
+    //qDebug() << "nach pthread mutelock";
 
     int delay = 0;      // Number of samples for the delay between both signals
     int peakSampleNum = 0; //TODO
@@ -56,7 +56,8 @@ int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
 procdata XCorrCalc::calc(bufferchunk * const sampledata)
 {
     procdata data;
+    data.fields.direction = calcDirection(sampledata);
+    data.fields.powerLevel = calcPowerLevel(sampledata);
 
-    int32_t dir = calcDirection(sampledata);
     return data; //TODO
 }

@@ -58,6 +58,9 @@ void SignalProcDispatcher::setup()
 void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
     // TODO
+    data.fields.clientID           = clientID;
+    data.fields.packetCounter      = pktCounter++;
+    data.fields.protocolVersion    = 0;
 
     //qDebug() << "sendToGui(). chunknum: " << chunknum;
     freeUsedBufferChunk(chunknum);
