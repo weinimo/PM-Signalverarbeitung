@@ -2,6 +2,8 @@
 #include "libxcorr/xcorr.h"
 #include <QDebug>
 
+pthread_mutex_t XCorrCalc::m_fftw = PTHREAD_MUTEX_INITIALIZER;
+
 XCorrCalc::XCorrCalc()
 {
 }
@@ -31,7 +33,11 @@ int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
         ch1data[i][1] = ch2data[i][1] = 0.0;                                    // No complex numbers
     }
 
+    pthread_mutex_lock(&m_fftw);
+    qDebug() << "in pthread mutexlock";
     xcorr(ch1data, ch2data, result, chDataSize);
+    pthread_mutex_unlock(&m_fftw);
+    qDebug() << "nach pthread mutelock";
 
     int delay = 0;      // Number of samples for the delay between both signals
     int peakSampleNum = 0; //TODO

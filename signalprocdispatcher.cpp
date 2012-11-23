@@ -9,7 +9,7 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP,
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
     osciDriver(osciIP, demoMode), osciPoller(this), pktCounter(0)
 {
-    osciPoller.setInterval(700);                                               // Set polling intervall in msecs
+    osciPoller.setInterval(200);                                                // Set polling intervall in msecs
 
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         usedBufferChunks[i] = false;

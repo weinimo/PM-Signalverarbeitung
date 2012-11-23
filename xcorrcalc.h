@@ -3,14 +3,18 @@
 
 #include "abstractcalc.h"
 
+#include <pthread.h>
+
 class XCorrCalc : public AbstractCalc
 {
 public:
     XCorrCalc();
-    procdata            calc(bufferchunk * const sampledata);
+    procdata                calc(bufferchunk * const sampledata);
+
+    static pthread_mutex_t  m_fftw;
 
 private:
-    int32_t             calcDirection(bufferchunk * const sampledata);
+    int32_t                 calcDirection(bufferchunk * const sampledata);
 };
 
 #endif // XCORRCALC_H
