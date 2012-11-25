@@ -21,8 +21,8 @@ typedef union bc_union_t {
 typedef union {
     struct
     {
-        uint8_t         clientID;
         uint8_t         protocolVersion;
+        uint8_t         clientID;
         uint16_t        packetCounter;
         uint16_t        direction;
         uint16_t        powerLevel;
