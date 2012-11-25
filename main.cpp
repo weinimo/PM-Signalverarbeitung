@@ -28,25 +28,48 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     // Command line parsing
-    QRegExp osciIPRegEx("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$");
-    QRegExp clientIDRegEx("^[0-9]{1,3}$");                                      // Matches everything from 0 to 999.
-    QRegExp demoModeRegEx("--demo");
+    QRegExp osciIPRegEx("^--osci$");
+    QRegExp netIPRegEx("^--net$");
+    QRegExp netPortRegEx("^--port$");
+    QRegExp clientIDRegEx("^--client$");
+    QRegExp demoModeRegEx("^--demo$");
+
+    QRegExp numRegEx("^[0-9]{1,4}$");
+    QRegExp ipRegEx("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$");
+
     bool demoMode = false;
     int clientID = -1;
-    QString ipaddr;
+
+    QString osciip;                                                             // Default values.
+    QString netip = "239.40.40.40";
+    int netport = 20020;
 
     QStringList cmdline_args = a.arguments();
 
     // command line argument parsing
     for (int i = 1; i < cmdline_args.size(); i++) {                             // Eg. cmdline_args = ./app --demo 42 => size() = 3 => iterate i from 1 to size-1
-        if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 )  {               // Do we use demo mode?
+        if ( demoModeRegEx.indexIn(cmdline_args.at(i)) != -1 ) {                // Do we use demo mode?
             demoMode = true;
         }
         else if ( clientIDRegEx.indexIn(cmdline_args.at(i)) != -1 ) {           // Try to get the client ID.
-            clientID = cmdline_args.at(i).toInt();
+            if (numRegEx.indexIn(cmdline_args.at(i + 1)) != -1) {
+                clientID = cmdline_args.at(++i).toInt();
+            }
         }
         else if ( osciIPRegEx.indexIn(cmdline_args.at(i)) != -1 ) {
-            ipaddr = cmdline_args.at(i);
+            if (ipRegEx.indexIn(cmdline_args.at(i + 1)) != -1) {
+                osciip = cmdline_args.at(++i);
+            }
+        }
+        else if ( netIPRegEx.indexIn(cmdline_args.at(i)) != -1 ) {
+            if (ipRegEx.indexIn(cmdline_args.at(i++)) != -1) {
+                netip = cmdline_args.at(++i);
+            }
+        }
+        else if ( netPortRegEx.indexIn(cmdline_args.at(i)) != -1 ) {
+            if (numRegEx.indexIn(cmdline_args.at(i + 1)) != -1) {
+                netport = cmdline_args.at(++i).toInt();
+            }
         }
         else {
             cerr << "Error: Unknown argument: " << cmdline_args.at(i) << endl;;
@@ -59,8 +82,6 @@ int main(int argc, char *argv[])
         cmdHelp(cmdline_args.at(0));
     }
 
-    SignalProcDispatcher sProc(0, ipaddr, clientID, demoMode);                  // Now let's start...
-    sProc.setup();
-
+    SignalProcDispatcher sProc(0, osciip, netip, netport, clientID, demoMode);  // Now let's start...
     return a.exec();
 }

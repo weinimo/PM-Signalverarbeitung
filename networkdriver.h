@@ -3,14 +3,20 @@
 
 #include "basicdefinitions.h"
 
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QUdpSocket>
+
 class NetworkDriver
 {
 public:
-    NetworkDriver();
-    void sendData(procdata data);
+    NetworkDriver(QString netIP, int netPort);
+    void                    sendData(procdata data);
 
 private:
-    void assemblePacket(procdata data);
+    QHostAddress            groupAddress;
+    int                     netPort;
+    int                     pktCounter;
+    QUdpSocket              udpSocket;
 };
 
 #endif // NETWORKDRIVER_H

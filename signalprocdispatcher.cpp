@@ -4,10 +4,10 @@
 
 bufferchunk SignalProcDispatcher::sampleBuffer[SPROC_NBUFFERCHUNKS];
 
-SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP,
-                                           int clientID, bool demoMode) :
+SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP, QString netIP,
+                                           int netPort, int clientID, bool demoMode) :
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
-    osciDriver(osciIP, demoMode), osciPoller(this), pktCounter(0)
+    netDriver(netIP, netPort), osciDriver(osciIP, demoMode), osciPoller(this)
 {
     osciPoller.setInterval(200);                                                // Set polling intervall in msecs
 
@@ -19,6 +19,14 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP,
     //qRegisterMetaType<bufferchunk*const>("bufferchunk*const");
     qRegisterMetaType<procdata>("procdata");
     qRegisterMetaType<procdata*>("procdata*");
+
+    // Set up connections
+    connect(&osciPoller, SIGNAL(timeout()), this, SLOT(pollOsciForData()));     // Tries to get sample data
+    connect(this, SIGNAL(chunkReadyForFilling(int)),              // Fills buffer chunks with sample data
+            &osciDriver, SLOT(fillChunk(int)));
+    connect(&osciDriver, SIGNAL(chunkFilled(int)),                // Dispatch chunk processing
+            this, SLOT(procChunk(int)));
+    osciPoller.start();
 }
 
 int SignalProcDispatcher::getFreeBufferChunkNum()
@@ -44,22 +52,9 @@ bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
     else assert(0);
 }
 
-void SignalProcDispatcher::setup()
-{
-    // Set up connections
-    connect(&osciPoller, SIGNAL(timeout()), this, SLOT(pollOsciForData()));     // Tries to get sample data
-    connect(this, SIGNAL(chunkReadyForFilling(int)),              // Fills buffer chunks with sample data
-            &osciDriver, SLOT(fillChunk(int)));
-    connect(&osciDriver, SIGNAL(chunkFilled(int)),                // Dispatch chunk processing
-            this, SLOT(procChunk(int)));
-    osciPoller.start();
-}
-
 void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
-    // TODO
     data.fields.clientID           = clientID;
-    data.fields.packetCounter      = pktCounter++;
     data.fields.protocolVersion    = 0;
 
     //qDebug() << "sendToGui(). chunknum: " << chunknum;

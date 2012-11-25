@@ -12,7 +12,9 @@ class SignalProcDispatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit                SignalProcDispatcher(QObject *parent, QString osciIP, int clientID, bool demoMode);
+    explicit                SignalProcDispatcher(QObject *parent, QString osciIP,
+                                                 QString netIP, int netPort,
+                                                 int clientID, bool demoMode);
     int                     getFreeBufferChunkNum();
     static bufferchunk *    getBufferChunk(int chunknum);
     void                    freeUsedBufferChunk(int chunknum);
@@ -28,7 +30,6 @@ private:
     NetworkDriver           netDriver;
     OsciDriver              osciDriver;
     QTimer                  osciPoller;
-    uint32_t                pktCounter;
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
     void                    getDataFromOsci();
