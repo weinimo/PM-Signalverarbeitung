@@ -9,7 +9,7 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP, QStr
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
     netDriver(netIP, netPort), osciDriver(osciIP, demoMode), osciPoller(this)
 {
-    osciPoller.setInterval(200);                                                // Set polling intervall in msecs
+    osciPoller.setInterval(100);                                                // Set polling intervall in msecs
 
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         usedBufferChunks[i] = false;
@@ -67,7 +67,7 @@ void SignalProcDispatcher::pollOsciForData()
 {
     //qDebug() << "pollOsciForData(): freeBuffer.available() "
     //         << freeBuffer.available();
-    if (freeBuffer.tryAcquire(1, 700)) {                                        // Try for 700 msecs to get a free Buffer chunk.
+    if (freeBuffer.tryAcquire(1, 50)) {                                        // Try for 50 msecs to get a free Buffer chunk.
         int chknum = getFreeBufferChunkNum();
         //qDebug() << "pollOsciForData(). chknum: " << chknum;
         emit chunkReadyForFilling(chknum);

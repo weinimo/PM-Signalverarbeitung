@@ -13,11 +13,15 @@ void cmdHelp(QString progname)
     cout << endl;
     cout << "Signal processing program for direction finding." << endl;
     cout << endl;
-    cout << "Usage: " << progname << " <clientID> [OPTIONS]" << endl;
+    cout << "Usage: " << progname << " --client <clientID> [OPTIONS]" << endl;
     cout << "  clientID must be a number between 0 and 255." << endl;
     cout << endl;
     cout << "Possible options:" << endl;
-    cout << "\t--demo\t\t Run program in demo mode. No oscilloscope required." << endl;
+    cout << "\t--demo\t\t\t Run program in demo mode. No oscilloscope required." << endl;
+    cout << "\t--net <IP>\t\t Set the IP address for the UDP network stream." << endl;
+    cout << "\t--port <port>\t\t Set the port for the UDP network stream." << endl;
+    cout << "\t--osci <IP>\t\t Set the IP address for the connection to the oscilloscope." << endl;
+
     cout << endl;
     cout << "(c) 2012 Thomas Weininger" << endl;
     exit(1);
