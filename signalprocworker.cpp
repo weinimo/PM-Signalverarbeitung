@@ -1,23 +1,23 @@
 #include "signalprocworker.h"
-
 #include "signalprocdispatcher.h"
+#include "xcorrcalc.h"
 
-SignalProcWorker::SignalProcWorker()
+#include <time.h> // TODO entfernen
+
+SignalProcWorker::SignalProcWorker(int chunknum) :
+    chunknum(chunknum)
 {
 }
 
-void SignalProcWorker::run()
-{
 
-}
-
-procdata SignalProcWorker::calc(bufferchunk * sampleData, int32_t dataSize)
+void SignalProcWorker::calc()
 {
     procdata data;
-    emit finished(data);
-}
+    //sleep(3);
 
-int32_t SignalProcWorker::calcDirUsingXCorr()
-{
+    XCorrCalc c;         // Create a XCorrCalc Instance
+    data = c.calc(SignalProcDispatcher::getBufferChunk(chunknum));
 
+    emit calcFinished(data, chunknum);
+    emit finished();
 }

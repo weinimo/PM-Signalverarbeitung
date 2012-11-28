@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 
 QT       -= gui
 
@@ -13,6 +13,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_LFLAGS += -lfftw3
 
 TEMPLATE = app
 
@@ -22,7 +23,11 @@ SOURCES += main.cpp \
     signalprocworker.cpp \
     abstractcalc.cpp \
     xcorrcalc.cpp \
-    oscidriver.cpp
+    oscidriver.cpp \
+    vxi11/vxi11_user.cc \
+    vxi11/vxi11_clnt.c \
+    vxi11/vxi11_xdr.c \
+    libxcorr/xcorr.c
 
 HEADERS += \
     signalprocdispatcher.h \
@@ -31,4 +36,6 @@ HEADERS += \
     signalprocworker.h \
     abstractcalc.h \
     xcorrcalc.h \
-    oscidriver.h
+    oscidriver.h \
+    vxi11/vxi11_user.h \
+    libxcorr/xcorr.h

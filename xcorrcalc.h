@@ -3,15 +3,15 @@
 
 #include "abstractcalc.h"
 
+#include <QMutex>
+
 class XCorrCalc : public AbstractCalc
 {
 public:
     XCorrCalc();
-    void        clone();
-    procdata    calc(bufferchunk *sampledata);
+    procdata                calc(bufferchunk * const sampledata);
 
-private:
-    int32_t     calcDirection();
+    static QMutex           m_fftw;
 };
 
 #endif // XCORRCALC_H

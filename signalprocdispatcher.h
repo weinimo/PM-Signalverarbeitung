@@ -12,40 +12,34 @@ class SignalProcDispatcher : public QObject
 {
     Q_OBJECT
 public:
-    //explicit SignalProcDispatcher(QObject *parent = 0);
-    explicit                SignalProcDispatcher(QObject *parent, int clientID);
-    static bufferchunk *    getUsedBufferChunk();
-    static void             freeUsedBufferChunk(bufferchunk * chunk, procdata data);
+    explicit                SignalProcDispatcher(QObject *parent, QString osciIP,
+                                                 QString netIP, int netPort,
+                                                 int clientID, bool demoMode);
+    int                     getFreeBufferChunkNum();
+    static bufferchunk *    getBufferChunk(int chunknum);
+    void                    freeUsedBufferChunk(int chunknum);
 
 private:
     int const               clientID;
-    uint32_t                pktCounter;
-    int const               nWorkerThreads;
-    bufferchunk             sampleBuffer[SPROC_NBUFFERCHUNKS];
+    QSemaphore              freeBuffer;
+    QMutex                  m;
+    NetworkDriver           netDriver;
+    OsciDriver              osciDriver;
+    QTimer                  osciPoller;
+    static bufferchunk      sampleBuffer[SPROC_NBUFFERCHUNKS];
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
-    QMutex                  m;
-    QSemaphore              freeBuffer;
-    QSemaphore              usedBuffer;
-    QTimer                  osciPoller;
-    QThread                 thread[SPROC_NBUFFERCHUNKS];
-
-    SignalProcWorker        worker[SPROC_NBUFFERCHUNKS];
-    OsciDriver              osciDriver;
-    NetworkDriver           netDriver;
-
-    void                    sendToGui(procdata data);
-    void                    fillFreeBufferChunk(int32_t * data, int32_t dataSize);
     void                    getDataFromOsci();
-    
-signals:
-    void                    bufferReadyForSampledata(bufferchunk * chunk);
-    
-public slots:
 
-private slots:
+signals:
+    void                    chunkReadyForFilling(int chunknum);
+
+public slots:
+    void                    procChunk(int chunknum);
     void                    pollOsciForData();
-    
+    //void                    sendToGui(procdata data, bufferchunk * const chunk);
+    void                    sendToGui(procdata data, int chunknum);
+
 };
 
 #endif // SIGNALPROCDISPATCHER_H

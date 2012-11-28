@@ -4,21 +4,23 @@
 #include <QObject>
 
 #include "basicdefinitions.h"
+#include "abstractcalc.h"
 
 class SignalProcWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit        SignalProcWorker();
-    void            run();
+    explicit        SignalProcWorker(int chunknum);
 
 private:
-    int32_t         calcDirUsingXCorr();
+    int             chunknum;
 
 signals:
-    void            finished(procdata data);
+    //void            calcFinished(procdata data, bufferchunk * const chunk);
+    void            calcFinished(procdata data, int chunknum);
+    void            finished();
 public slots:
-    procdata        calc(bufferchunk * sampleData, int32_t dataSize);
+    void            calc();
 };
 
 #endif // SIGNALPROCWORKER_H

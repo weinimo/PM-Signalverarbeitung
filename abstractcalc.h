@@ -7,12 +7,13 @@ class AbstractCalc
 {
 public:
     AbstractCalc();
-    virtual void clone() = 0;
-    virtual procdata calc(bufferchunk * sampledata) = 0;
+    virtual procdata calc(bufferchunk * const sampledata) = 0;
 
 protected:
-    int32_t calcPowerLevel();
-    virtual int32_t calcDirection() = 0;
+    //virtual int32_t calcPowerLevel(bufferchunk * const sampledata);
+    //virtual int32_t calcDirection(bufferchunk * const sampledata) = 0;
+
 };
+
 
 #endif // ABSTRACTCALC_H

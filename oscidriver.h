@@ -2,27 +2,36 @@
 #define OSCIDRIVER_H
 
 #include <QObject>
+#include <QString>
 
 #include "basicdefinitions.h"
+#include "vxi11/vxi11_user.h"
+
+#define OSCI_RDBUFFERSIZE 1000000
 
 class OsciDriver: public QObject
 {
     Q_OBJECT
 public:
-    OsciDriver(bool demoMode = false);
+    OsciDriver(QString ipaddress, bool demoMode = false);
 
 private:
+    CLINK *                 clink;
     bool                    demoMode;
+    QString                 ipaddr;
+    char                    readBuffer[OSCI_RDBUFFERSIZE];
+
+    void                    getDemoData(bufferchunk * const chunk);
+    void                    getSampleData(bufferchunk * const chunk);
+    long                    sendCmd(QString cmd);
+    long                    sendCmd(QString cmd, double * result);
     void                    writeOsciSettings();
-    void                    getDemoData(int32_t * const sampledata, int32_t datasize);
-    void                    getSampleData(int const channel, int32_t * const sampledata,
-                                          int32_t datasize);
 
 signals:
-    void                    finished(int32_t * sampledata);
+    void                    chunkFilled(int chunknum);
 
 public slots:
-    void                    fillBuffer(bufferchunk * const chunk);
+    void                    fillChunk(int chunknum);
 };
 
 #endif // OSCIDRIVER_H
