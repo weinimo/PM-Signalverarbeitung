@@ -19,10 +19,6 @@ public:
     static bufferchunk *    getBufferChunk(int chunknum);
     void                    freeUsedBufferChunk(int chunknum);
 
-    void                    setup();
-
-    static bufferchunk      sampleBuffer[SPROC_NBUFFERCHUNKS]; // TODO private
-
 private:
     int const               clientID;
     QSemaphore              freeBuffer;
@@ -30,6 +26,7 @@ private:
     NetworkDriver           netDriver;
     OsciDriver              osciDriver;
     QTimer                  osciPoller;
+    static bufferchunk      sampleBuffer[SPROC_NBUFFERCHUNKS];
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
     void                    getDataFromOsci();

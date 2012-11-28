@@ -2,23 +2,20 @@
 #include "libxcorr/xcorr.h"
 #include <QDebug>
 
-pthread_mutex_t XCorrCalc::m_fftw = PTHREAD_MUTEX_INITIALIZER;
+QMutex XCorrCalc::m_fftw;
 
 XCorrCalc::XCorrCalc()
 {
 }
 
-/**
- * @brief XCorrCalc::calcDirection
- * Calcutates the sender direction using cross-correlation.
- * @param sampledata
- * @return
- */
-int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
+procdata XCorrCalc::calc(bufferchunk * const sampledata)
 {
+    procdata data;
+    data.doubleword = 0;
     fftw_complex * ch1data, * ch2data, * result;
-    int const chDataSize = SPROC_SAMPLEDATASIZE / 2;
-    int const resultSize = 2 * chDataSize - 1;
+    int const chDataSize        = SPROC_SAMPLEDATASIZE / 2;
+    int const resultSize        = 2 * chDataSize - 1;
+    int const samplesPerPeriod  = 800; // TODO: Constant calculation formula
 
     ch1data = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * chDataSize);
@@ -33,13 +30,11 @@ int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
         ch1data[i][1] = ch2data[i][1] = 0.0;                                    // No complex numbers
     }
 
-    pthread_mutex_lock(&m_fftw);
-    //qDebug() << "in pthread mutexlock";
+    m_fftw.lock();
     xcorr(ch1data, ch2data, result, chDataSize);
-    pthread_mutex_unlock(&m_fftw);
-    //qDebug() << "nach pthread mutelock";
+    m_fftw.unlock();
 
-    int delay = 0;      // Number of samples for the delay between both signals
+    int32_t delay = 0;      // Number of samples for the delay between both signals
     int peakSampleNum = 0; //TODO
     for (int i = 0; i < resultSize; i++) {
         if (result[i][0] > peakSampleNum) {
@@ -49,15 +44,23 @@ int32_t XCorrCalc::calcDirection(bufferchunk * const sampledata)
     }
 
     qDebug() << "calcdly " << delay << "peakSampleNum " << peakSampleNum;
-    return delay; //TODO
-}
 
+    // Calculate direction in degrees
+    if (delay < 0) {                                                            // For negative delays.
+        delay *= -1;
+        data.fields.direction = 360 - delay * 360 / samplesPerPeriod;
+    }
+    else {
+        data.fields.direction = delay * 360 / samplesPerPeriod;
+    }
 
-procdata XCorrCalc::calc(bufferchunk * const sampledata)
-{
-    procdata data;
-    data.fields.direction = calcDirection(sampledata);
-    data.fields.powerLevel = calcPowerLevel(sampledata);
+    data.fields.powerLevel = 0;
+    for (int i = 0; peakSampleNum > 10000000; i++) {
+        data.fields.powerLevel |= 1 << i;                                       // The number of ones indicate the power level
+        peakSampleNum -= 10000000;                                              // E.g. peakSampleNum = 116000000
+    }                                                                           // => data.powerlevel = 0x07FF
 
+    qDebug() << "Direction (degrees)" << data.fields.direction
+             << "Power level" << data.fields.powerLevel;
     return data; //TODO
 }

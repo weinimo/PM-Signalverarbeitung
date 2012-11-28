@@ -78,7 +78,7 @@ void OsciDriver::fillChunk(int chunknum)
 void OsciDriver::getDemoData(bufferchunk * const chunk)
 {
     // simulate a random delay
-    int randdly = qrand() % 40;
+    int randdly = qrand() % 500;
     int dlyChan = qrand() % 2;
     if (0 == dlyChan)   qDebug() << "randdly " << randdly * (-1);
     else                qDebug() << "randdly " << randdly;

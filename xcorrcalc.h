@@ -3,7 +3,7 @@
 
 #include "abstractcalc.h"
 
-#include <pthread.h>
+#include <QMutex>
 
 class XCorrCalc : public AbstractCalc
 {
@@ -11,10 +11,7 @@ public:
     XCorrCalc();
     procdata                calc(bufferchunk * const sampledata);
 
-    static pthread_mutex_t  m_fftw;
-
-private:
-    int32_t                 calcDirection(bufferchunk * const sampledata);
+    static QMutex           m_fftw;
 };
 
 #endif // XCORRCALC_H

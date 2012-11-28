@@ -1,6 +1,7 @@
 #include "networkdriver.h"
 
 #include <arpa/inet.h>
+#include <QDebug>
 
 NetworkDriver::NetworkDriver(QString netIP, int netPort)
     : groupAddress(netIP), netPort(netPort), pktCounter(0)
