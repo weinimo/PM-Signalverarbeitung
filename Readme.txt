@@ -9,9 +9,11 @@ System Requirements:
 
 Know Issues:
 
-- No network interface
 - Osci interface mostly untested
 - No power level calculation
 - ...
 
+How to test (standalone demomode):
 
+./Signalverarbeitung --demo --client 1
+(or look at the output of "./Signalverarbeitung")

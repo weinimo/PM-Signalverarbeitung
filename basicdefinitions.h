@@ -6,7 +6,7 @@
 #include <QMetaType>
 
 #define SPROC_NBUFFERCHUNKS       4
-#define SPROC_SAMPLEDATASIZE   8192                                             // Size of a buffer chunk in 32 bit words. Number must be multiple of 2.
+#define SPROC_SAMPLEDATASIZE  16384                                             // Size of a buffer chunk in 32 bit words. Number must be multiple of 2.
 
 
 typedef union bc_union_t

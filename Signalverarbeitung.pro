@@ -13,7 +13,8 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_LFLAGS += -lfftw3
+#QMAKE_LFLAGS += -lfftw3
+LIBS += /usr/lib/libfftw3.a
 
 TEMPLATE = app
 

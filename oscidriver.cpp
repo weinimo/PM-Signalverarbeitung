@@ -20,7 +20,7 @@ OsciDriver::OsciDriver(QString ipaddress, bool demoMode):
 
 void OsciDriver::writeOsciSettings()
 {
-
+    sendCmd("AUTOSCALE");
 }
 
 long OsciDriver::sendCmd(QString cmd)
@@ -35,11 +35,20 @@ long OsciDriver::sendCmd(QString cmd)
         else if (bytes_returned == -15) {
             printf("*** [ NOTHING RECEIVED ] ***\n");
         }
+        qDebug() << "DEBUG: Do not call sendCmd(QString) with a command containing a ?";
+    }
+    char opcbuf[10] = "         ";
+    while (true) { // Wait for "Operation Complete" TODO: verfeinern
+        usleep(1000);
+        vxi11_send_and_receive(clink, "*OPC?", opcbuf, 10, 1000);
+        if (opcbuf[0] == '1') {
+            break;
+        }
     }
     return bytes_returned;
 }
 
-long OsciDriver::sendCmd(QString cmd, double * result)
+long OsciDriver::sendCmd(QString cmd, double * result, int resultsize)
 {
     long bytes_returned = 0;
     int ret = vxi11_send(clink, cmd.toAscii());
@@ -50,12 +59,22 @@ long OsciDriver::sendCmd(QString cmd, double * result)
             QString tString = readBuffer;
             QStringList tStringList = tString.split(",");
             for (int i = 0; i < tStringList.size(); i++) {
+                if (i = resultsize) {
+                    break;  // Prevent writing over buffer chunk array bounds.
+                }
                 result[i] = tStringList.at(i).toDouble();       // TODO: Possible out-of-bounds if result is too small
             }
-            // TODO Verarbeitung
         }
         else if (bytes_returned == -15) {
             printf("*** [ NOTHING RECEIVED ] ***\n");
+        }
+    }
+    char opcbuf[10] = "         ";
+    while (true) { // Wait for "Operation Complete" TODO: verfeinern
+        usleep(1000);
+        vxi11_send_and_receive(clink, "*OPC?", opcbuf, 10, 1000);
+        if (opcbuf[0] == '1') {
+            break;
         }
     }
     return bytes_returned;
@@ -78,7 +97,7 @@ void OsciDriver::fillChunk(int chunknum)
 void OsciDriver::getDemoData(bufferchunk * const chunk)
 {
     // simulate a random delay
-    int randdly = qrand() % 500;
+    int randdly = qrand() % 50;
     int dlyChan = qrand() % 2;
     if (0 == dlyChan)   qDebug() << "randdly " << randdly * (-1);
     else                qDebug() << "randdly " << randdly;
@@ -99,6 +118,9 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
 void OsciDriver::getSampleData(bufferchunk * const chunk)
 {
     memset(readBuffer, 0, OSCI_RDBUFFERSIZE);                                   // Init read buffer
-    // TODO
+    sendCmd("STOP");
+    sendCmd("CHAN1:DATA?", chunk->channels.first, SPROC_SAMPLEDATASIZE / 2);
+    sendCmd("CHAN2:DATA?", chunk->channels.second, SPROC_SAMPLEDATASIZE / 2);
+    sendCmd("RUN");
 }
 

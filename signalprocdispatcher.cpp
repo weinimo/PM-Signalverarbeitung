@@ -9,7 +9,7 @@ SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP, QStr
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
     netDriver(netIP, netPort), osciDriver(osciIP, demoMode), osciPoller(this)
 {
-    osciPoller.setInterval(100);                                                // Set polling intervall in msecs
+    osciPoller.setInterval(600);                                                // Set polling intervall in msecs
 
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         usedBufferChunks[i] = false;
@@ -55,7 +55,7 @@ bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
 void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
     data.fields.clientID           = clientID;
-    data.fields.protocolVersion    = 0;
+    data.fields.protocolVersion    = 1;
 
     //qDebug() << "sendToGui(). chunknum: " << chunknum;
     freeUsedBufferChunk(chunknum);
