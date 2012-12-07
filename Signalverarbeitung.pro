@@ -12,7 +12,7 @@ TARGET = Signalverarbeitung
 CONFIG   += console
 CONFIG   -= app_bundle
 
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++0x -static
 #QMAKE_LFLAGS += -lfftw3
 LIBS += /usr/lib/libfftw3.a
 
