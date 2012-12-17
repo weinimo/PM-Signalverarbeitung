@@ -2,7 +2,8 @@
 #include "libxcorr/xcorr.h"
 #include <QDebug>
 
-QMutex XCorrCalc::m_fftw;
+QMutex  XCorrCalc::m_fftw;
+int     XCorrCalc::directionMem[] = {0, 0};
 
 XCorrCalc::XCorrCalc()
 {
@@ -15,7 +16,7 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     fftw_complex * ch1data, * ch2data, * result;
     int const chDataSize        = SPROC_SAMPLEDATASIZE / 2;
     int const resultSize        = 2 * chDataSize - 1;
-    int const samplesPerPeriod  = 800; // TODO: Constant calculation formula
+    int const samplesPerPeriod  = 250;                                          // 1000 Samples for 4 Periods
 
     ch1data = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * chDataSize);
@@ -35,24 +36,27 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     m_fftw.unlock();
 
     int32_t delay = 0;      // Number of samples for the delay between both signals
-    int peakSampleNum = 0; //TODO
+    double peakSampleNum = 0; //TODO
     for (int i = 0; i < resultSize; i++) {
         if (result[i][0] > peakSampleNum) {
             peakSampleNum = result[i][0];
             delay = chDataSize - 1 - i;
+            //delay = i;
         }
     }
 
-    qDebug() << "calcdly " << delay << "peakSampleNum " << peakSampleNum;
+    //qDebug() << "calcdly " << delay << "peakSampleNum " << peakSampleNum;
 
     // Calculate direction in degrees
+    uint16_t newdirection = 0;
     if (delay < 0) {                                                            // For negative delays.
         delay *= -1;
-        data.fields.direction = 360 - delay * 360 / samplesPerPeriod;
+        newdirection = 360 - delay * 360 / samplesPerPeriod;
     }
     else {
-        data.fields.direction = delay * 360 / samplesPerPeriod;
+        newdirection = delay * 360 / samplesPerPeriod;
     }
+    qDebug() << "Newdirection" << newdirection;
 
     data.fields.powerLevel = 0;
     for (int i = 0; peakSampleNum > 10000000; i++) {
@@ -60,7 +64,24 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
         peakSampleNum -= 10000000;                                              // E.g. peakSampleNum = 116000000
     }                                                                           // => data.powerlevel = 0x07FF
 
+    data.fields.direction = directionFIRFilter(newdirection);
+
     qDebug() << "Direction (degrees)" << data.fields.direction
              << "Power level" << data.fields.powerLevel;
     return data; //TODO
+}
+
+uint16_t XCorrCalc::directionFIRFilter(uint16_t newdirection)
+{
+    uint32_t sum = newdirection;
+    for (int i = 0; i < XCORRCALC_DIRMEMSIZE ; i++) {
+        sum += directionMem[i];
+    }
+
+    for (int i = 1; i < XCORRCALC_DIRMEMSIZE; i++) {
+        directionMem[i] = directionMem[i-1];
+    }
+    directionMem[0] = newdirection;
+
+    return (sum / (XCORRCALC_DIRMEMSIZE + 1));
 }

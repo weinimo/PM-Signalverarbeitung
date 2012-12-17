@@ -20,7 +20,8 @@ OsciDriver::OsciDriver(QString ipaddress, bool demoMode):
 
 void OsciDriver::writeOsciSettings()
 {
-    sendCmd("AUTOSCALE");
+    //sendCmd("AUTOSCALE");
+    sendCmd("TIMEBASE:SCALE 10e-9");
 }
 
 long OsciDriver::sendCmd(QString cmd)
@@ -55,14 +56,14 @@ long OsciDriver::sendCmd(QString cmd, double * result, int resultsize)
     if (cmd.contains("?")) {
         bytes_returned = vxi11_receive(clink, readBuffer, OSCI_RDBUFFERSIZE);
         if (bytes_returned > 0) {
-            qDebug() << readBuffer;
+            //qDebug() << readBuffer;
             QString tString = readBuffer;
             QStringList tStringList = tString.split(",");
             for (int i = 0; i < tStringList.size(); i++) {
-                if (i = resultsize) {
+                if (i == resultsize) {
                     break;  // Prevent writing over buffer chunk array bounds.
                 }
-                result[i] = tStringList.at(i).toDouble();       // TODO: Possible out-of-bounds if result is too small
+                result[i] = 1E5 * tStringList.at(i).toDouble();       // TODO: Possible out-of-bounds if result is too small
             }
         }
         else if (bytes_returned == -15) {
@@ -97,7 +98,7 @@ void OsciDriver::fillChunk(int chunknum)
 void OsciDriver::getDemoData(bufferchunk * const chunk)
 {
     // simulate a random delay
-    int randdly = qrand() % 50;
+    int randdly = qrand() % 100;
     int dlyChan = qrand() % 2;
     if (0 == dlyChan)   qDebug() << "randdly " << randdly * (-1);
     else                qDebug() << "randdly " << randdly;
@@ -105,12 +106,12 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
 //#pragma omp parallel for
     for (int i = 0; i < SPROC_SAMPLEDATASIZE / 2 - randdly; i++) {
         if (0 == dlyChan) {
-            chunk->channels.first[i+randdly] = i % 300;
-            chunk->channels.second[i] = i % 300;
+            chunk->channels.first[i+randdly] = (i % 250) * 1E-3;
+            chunk->channels.second[i] = (i % 250) * 1E-3;
         }
         else {
-            chunk->channels.first[i] = i % 300;
-            chunk->channels.second[i+randdly] = i % 300;
+            chunk->channels.first[i] = (i % 250) * 1E-3;
+            chunk->channels.second[i+randdly] = (i % 250) * 1E-3;
         }
     }
 }
@@ -118,9 +119,9 @@ void OsciDriver::getDemoData(bufferchunk * const chunk)
 void OsciDriver::getSampleData(bufferchunk * const chunk)
 {
     memset(readBuffer, 0, OSCI_RDBUFFERSIZE);                                   // Init read buffer
-    sendCmd("STOP");
+    sendCmd("SING");
     sendCmd("CHAN1:DATA?", chunk->channels.first, SPROC_SAMPLEDATASIZE / 2);
     sendCmd("CHAN2:DATA?", chunk->channels.second, SPROC_SAMPLEDATASIZE / 2);
-    sendCmd("RUN");
+    //sendCmd("RUN");
 }
 
