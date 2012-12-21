@@ -56,7 +56,6 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     else {
         newdirection = delay * 360 / samplesPerPeriod;
     }
-    qDebug() << "Newdirection" << newdirection;
 
     data.fields.powerLevel = 0;
     for (int i = 0; peakSampleNum > 10000000; i++) {
