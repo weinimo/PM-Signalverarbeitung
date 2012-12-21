@@ -21,7 +21,7 @@ OsciDriver::OsciDriver(QString ipaddress, bool demoMode):
 void OsciDriver::writeOsciSettings()
 {
     //sendCmd("AUTOSCALE");
-    sendCmd("TIMEBASE:SCALE 10e-9");
+    sendCmd("TIMEBASE:SCALE 5e-9");
 }
 
 long OsciDriver::sendCmd(QString cmd)
