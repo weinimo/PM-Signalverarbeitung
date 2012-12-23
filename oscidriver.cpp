@@ -61,9 +61,9 @@ long OsciDriver::sendCmd(QString cmd, double * result, int resultsize)
             QStringList tStringList = tString.split(",");
             for (int i = 0; i < tStringList.size(); i++) {
                 if (i == resultsize) {
-                    break;  // Prevent writing over buffer chunk array bounds.
+                    break;                                                      // Prevent writing over buffer chunk array bounds.
                 }
-                result[i] = 1E5 * tStringList.at(i).toDouble();       // TODO: Possible out-of-bounds if result is too small
+                result[i] = 1E5 * tStringList.at(i).toDouble();
             }
         }
         else if (bytes_returned == -15) {
