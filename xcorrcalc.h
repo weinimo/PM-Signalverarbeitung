@@ -16,9 +16,9 @@ public:
     static QMutex           m_fftw;
 
 private:
-    uint16_t                directionFIRFilter(uint16_t newdirection);
+    int32_t directionFIRFilter(int32_t signedTheta);
 
-    static int              directionMem[XCORRCALC_DIRMEMSIZE];
+    static int32_t          directionMem[XCORRCALC_DIRMEMSIZE];
 };
 
 #endif // XCORRCALC_H

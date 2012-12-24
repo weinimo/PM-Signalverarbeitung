@@ -62,7 +62,9 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
      * theta: Direction angle
      */
     int32_t signedTheta = asin(delay * 1.0 / hypotenuse) * 180 / pi;            // Calculates Theta (signed)
-    qDebug() << "theta (signed)" << signedTheta;
+    qDebug() << "theta (signed, unfiltered)" << signedTheta;
+    signedTheta = directionFIRFilter(signedTheta);                              // Do lowpass filtering on angle values
+    qDebug() << "theta (signed, filtered)" << signedTheta;
     uint16_t usignedTheta = 0;
     if (signedTheta < 0) {                                                      // For negative delays.
         usignedTheta = 360 + signedTheta;
@@ -78,16 +80,16 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
         peakSampleNum -= 10000000;                                              // E.g. peakSampleNum = 116000000
     }                                                                           // => data.powerlevel = 0x07FF
 
-    data.fields.direction = directionFIRFilter(usignedTheta);
+    data.fields.direction = usignedTheta;
 
     qDebug() << "Direction (degrees)" << data.fields.direction
              << "Power level" << data.fields.powerLevel;
     return data; //TODO
 }
 
-uint16_t XCorrCalc::directionFIRFilter(uint16_t usignedTheta)
+int32_t XCorrCalc::directionFIRFilter(int32_t signedTheta)
 {
-    uint32_t sum = usignedTheta;
+    int32_t sum = signedTheta;
     for (int i = 0; i < XCORRCALC_DIRMEMSIZE ; i++) {
         sum += directionMem[i];
     }
@@ -95,7 +97,7 @@ uint16_t XCorrCalc::directionFIRFilter(uint16_t usignedTheta)
     for (int i = 1; i < XCORRCALC_DIRMEMSIZE; i++) {
         directionMem[i] = directionMem[i-1];
     }
-    directionMem[0] = usignedTheta;
+    directionMem[0] = signedTheta;
 
     return (sum / (XCORRCALC_DIRMEMSIZE + 1));
 }
