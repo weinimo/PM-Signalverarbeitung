@@ -44,7 +44,6 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
         if (result[i][0] > peakSampleNum) {
             peakSampleNum = result[i][0];
             delay = chDataSize - 1 - i;
-            //delay = i;
         }
     }
 
