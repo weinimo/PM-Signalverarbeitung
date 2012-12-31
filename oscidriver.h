@@ -7,7 +7,7 @@
 #include "basicdefinitions.h"
 #include "vxi11/vxi11_user.h"
 
-#define OSCI_RDBUFFERSIZE 1000000
+#define OSCI_RDBUFFERSIZE 120000
 
 class OsciDriver: public QObject
 {
@@ -24,7 +24,7 @@ private:
     void                    getDemoData(bufferchunk * const chunk);
     void                    getSampleData(bufferchunk * const chunk);
     long                    sendCmd(QString cmd);
-    long                    sendCmd(QString cmd, double * result);
+    long                    sendCmd(QString cmd, double * result, int resultsize);
     void                    writeOsciSettings();
 
 signals:

@@ -2,14 +2,14 @@
 
 #include "signalprocdispatcher.h"
 
-bufferchunk SignalProcDispatcher::sampleBuffer[SPROC_NBUFFERCHUNKS];
+std::array<bufferchunk, SPROC_NBUFFERCHUNKS> SignalProcDispatcher::sampleBuffer;
 
 SignalProcDispatcher::SignalProcDispatcher(QObject *parent, QString osciIP, QString netIP,
                                            int netPort, int clientID, bool demoMode) :
     QObject(parent), clientID(clientID), freeBuffer(SPROC_NBUFFERCHUNKS),
     netDriver(netIP, netPort), osciDriver(osciIP, demoMode), osciPoller(this)
 {
-    osciPoller.setInterval(100);                                                // Set polling intervall in msecs
+    osciPoller.setInterval(400);                                                // Set polling intervall in msecs
 
     for (int i = 0; i < SPROC_NBUFFERCHUNKS; i++)
         usedBufferChunks[i] = false;
@@ -36,8 +36,8 @@ int SignalProcDispatcher::getFreeBufferChunkNum()
         if (usedBufferChunks[i] == false){
             //qDebug() << "getFreeBufferChunk(): " << i;
             usedBufferChunks[i] = true;
-            memset(&SignalProcDispatcher::sampleBuffer[i],
-                   0, 4*SPROC_SAMPLEDATASIZE);
+            memset(&SignalProcDispatcher::sampleBuffer.at(i), 0,
+                   sizeof(SignalProcDispatcher::sampleBuffer.at(i)));
             return i;
         }
     qDebug() << "getFreeBufferChunk(): ERROR: Method was called when no buffer chunk was free.";
@@ -47,7 +47,7 @@ int SignalProcDispatcher::getFreeBufferChunkNum()
 bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
 {
     if (chunknum >= 0 && chunknum < SPROC_NBUFFERCHUNKS) {
-        return &SignalProcDispatcher::sampleBuffer[chunknum];
+        return &SignalProcDispatcher::sampleBuffer.at(chunknum);
     }
     else assert(0);
 }
@@ -55,7 +55,7 @@ bufferchunk * SignalProcDispatcher::getBufferChunk(int chunknum)
 void SignalProcDispatcher::sendToGui(procdata data, int chunknum)
 {
     data.fields.clientID           = clientID;
-    data.fields.protocolVersion    = 0;
+    data.fields.protocolVersion    = 1;
 
     //qDebug() << "sendToGui(). chunknum: " << chunknum;
     freeUsedBufferChunk(chunknum);

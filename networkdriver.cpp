@@ -12,9 +12,9 @@ void NetworkDriver::sendData(procdata data)
 {
     data.fields.packetCounter      = pktCounter++;
 
-    data.halfwords[1] = htons(data.halfwords[1]);                               // Correct byte order
+    /*data.halfwords[1] = htons(data.halfwords[1]);                               // Correct byte order
     data.halfwords[2] = htons(data.halfwords[2]);
-    data.halfwords[3] = htons(data.halfwords[3]);
+    data.halfwords[3] = htons(data.halfwords[3]);*/
 
     QByteArray databytes;
     databytes.append((char*)data.bytes, 8); //TOFIX: cast

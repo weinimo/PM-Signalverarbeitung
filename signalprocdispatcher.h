@@ -2,6 +2,7 @@
 #define SIGNALPROCDISPATCHER_H
 
 #include <QtCore>
+#include <array>
 
 #include "basicdefinitions.h"
 #include "signalprocworker.h"
@@ -26,7 +27,7 @@ private:
     NetworkDriver           netDriver;
     OsciDriver              osciDriver;
     QTimer                  osciPoller;
-    static bufferchunk      sampleBuffer[SPROC_NBUFFERCHUNKS];
+    static std::array<bufferchunk, SPROC_NBUFFERCHUNKS> sampleBuffer;
     bool                    usedBufferChunks[SPROC_NBUFFERCHUNKS];
 
     void                    getDataFromOsci();
