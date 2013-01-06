@@ -63,7 +63,8 @@ long OsciDriver::sendCmd(QString cmd, double * result, int resultsize)
                 if (i == resultsize) {
                     break;                                                      // Prevent writing over buffer chunk array bounds.
                 }
-                result[i] = 1E5 * tStringList.at(i).toDouble();
+                //TODO: Equalization is now done by XCorrCalc: result[i] = 1E5 * tStringList.at(i).toDouble();
+                result[i] = tStringList.at(i).toDouble();
             }
         }
         else if (bytes_returned == -15) {

@@ -19,6 +19,8 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     int const resultSize        = 2 * chDataSize - 1;
     int const samplesPerPeriod  = 500;                                          // 1000 Samples for 2 Periods
     int const hypotenuse = samplesPerPeriod / 4;                                // Distance between both antennas = lambda / 4
+    double signalAmplitude = 0.0;                                               // Holds the signal amplitude of the first channel.
+    double signalAmplification = 1.0;                                           // Artificial amplification factor for the FFT calculation.
     double const pi = 3.14159265;
 
     ch1data = (fftw_complex*)
@@ -28,9 +30,17 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     result  = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * resultSize);
 
+    for (int i = 0; i < chDataSize; i++) {                                      // Get signal amplitude
+        if (sampledata->channels.first[i] > signalAmplitude) {
+            signalAmplitude = sampledata->channels.first[i];
+        }
+    }
+
+    // TODO: Set signalAmplification dependent on signalAmpllitude here.
+
     for (int i = 0; i < chDataSize; i++) {
-        ch1data[i][0] = sampledata->channels.first[i];                          // Store channel data as real values
-        ch2data[i][0] = sampledata->channels.second[i];
+        ch1data[i][0] = signalAmplification * sampledata->channels.first[i];    // Store channel data as real values
+        ch2data[i][0] = signalAmplification * sampledata->channels.second[i];
         ch1data[i][1] = ch2data[i][1] = 0.0;                                    // No complex numbers
     }
 
