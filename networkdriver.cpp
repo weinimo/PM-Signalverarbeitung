@@ -19,6 +19,7 @@ void NetworkDriver::sendData(procdata data)
     QByteArray databytes;
     databytes.append((char*)data.bytes, 8); //TOFIX: cast
 
+    //qDebug() << groupAddress;
     udpSocket.writeDatagram(databytes, groupAddress, netPort);
 }
 

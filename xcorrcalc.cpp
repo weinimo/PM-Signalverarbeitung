@@ -37,6 +37,18 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     }
 
     // TODO: Set signalAmplification dependent on signalAmpllitude here.
+    if (signalAmplitude <= 1e-9) {
+        signalAmplification = 1.0e12;
+    }
+    else if ( (signalAmplitude > 1e-9) && (signalAmplitude <= 1e-6)) {
+        signalAmplification = 1.0e9;
+    }
+    else if ( (signalAmplitude > 1e-6) && (signalAmplitude <= 1e-3)) {
+        signalAmplification = 1.0e6;
+    }
+    else if ( (signalAmplitude > 1e-3) && (signalAmplitude <= 1.0)) {
+        signalAmplification = 1.0e5;
+    }
 
     for (int i = 0; i < chDataSize; i++) {
         ch1data[i][0] = signalAmplification * sampledata->channels.first[i];    // Store channel data as real values
