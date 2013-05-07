@@ -2,5 +2,5 @@ language: cpp
 compiler:
   - gcc
   - clang
-script: qmake: qmake Signalverarbeitung.pro -r -spec linux-g++ CONFIG+=debug CONFIG+=declarative_debug && make
+script: cd vxi11 && make && cd .. && qmake Signalverarbeitung.pro -r -spec linux-g++ CONFIG+=debug CONFIG+=declarative_debug && make
 
