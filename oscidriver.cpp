@@ -2,6 +2,8 @@
 #include "signalprocdispatcher.h"
 #include "vxi11/vxi11_user.h"
 
+#include <unistd.h>
+
 OsciDriver::OsciDriver(QString ipaddress, bool demoMode):
     demoMode(demoMode), ipaddr(ipaddress)
 {
