@@ -37,6 +37,18 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     }
 
     // TODO: Set signalAmplification dependent on signalAmpllitude here.
+    if (signalAmplitude <= 1e-9) {
+        signalAmplification = 1.0e12;
+    }
+    else if ( (signalAmplitude > 1e-9) && (signalAmplitude <= 1e-6)) {
+        signalAmplification = 1.0e9;
+    }
+    else if ( (signalAmplitude > 1e-6) && (signalAmplitude <= 1e-3)) {
+        signalAmplification = 1.0e6;
+    }
+    else if ( (signalAmplitude > 1e-3) && (signalAmplitude <= 1.0)) {
+        signalAmplification = 1.0e5;
+    }
 
     for (int i = 0; i < chDataSize; i++) {
         ch1data[i][0] = signalAmplification * sampledata->channels.first[i];    // Store channel data as real values
@@ -71,9 +83,9 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
      * theta: Direction angle
      */
     int32_t signedTheta = asin(delay * 1.0 / hypotenuse) * 180 / pi;            // Calculates Theta (signed)
-    qDebug() << "theta (signed, unfiltered)" << signedTheta;
+    //qDebug() << "theta (signed, unfiltered)" << signedTheta;
     signedTheta = directionFIRFilter(signedTheta);                              // Do lowpass filtering on angle values
-    qDebug() << "theta (signed, filtered)" << signedTheta;
+    //qDebug() << "theta (signed, filtered)" << signedTheta;
     uint16_t usignedTheta = 0;
     if (signedTheta < 0) {                                                      // For negative delays.
         usignedTheta = 360 + signedTheta;
@@ -81,7 +93,7 @@ procdata XCorrCalc::calc(bufferchunk * const sampledata)
     else {
         usignedTheta = signedTheta;
     }
-    qDebug() << "theta (unsigned)" << usignedTheta;
+    //qDebug() << "theta (unsigned)" << usignedTheta;
 
     data.fields.powerLevel = 0;
     for (int i = 0; peakSampleNum > 10000000; i++) {
